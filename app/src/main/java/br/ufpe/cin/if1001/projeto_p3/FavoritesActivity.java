@@ -1,13 +1,13 @@
 package br.ufpe.cin.if1001.projeto_p3;
 
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import org.jetbrains.annotations.Nullable;
+import android.os.Bundle;
 
-public final class FavoritesActivity extends AppCompatActivity {
+public class FavoritesActivity extends AppCompatActivity {
 
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setContentView(R.layout.activity_favorites);
+        setContentView(R.layout.activity_favorites);
     }
 }
