@@ -18,7 +18,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/toggle/ic_star_border_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_delete_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -29,8 +29,11 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="333333" />
-                            <entry key="outputName" value="ic_star_border_black_24dp" />
-                            <entry key="sourceFile" value="C:\Users\Paulo Vaz" />
+                            <entry key="height" value="32" />
+                            <entry key="outputName" value="ic_delete_black_32dp" />
+                            <entry key="overrideSize" value="true" />
+                            <entry key="sourceFile" value="C:\Projetos\Android\projetop3\app\src\main\res\drawable\ic_delete_black_24dp.xml" />
+                            <entry key="width" value="32" />
                           </map>
                         </option>
                       </PersistentState>
