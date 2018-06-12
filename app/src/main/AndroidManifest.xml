@@ -9,17 +9,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ViewLaterActivity" />
-        <activity android:name=".FavoritesActivity" />
-        <activity android:name=".ReaderActivity" />
-        <activity android:name=".FeedsActivity"></activity>
+        <activity android:name=".activities.ViewLaterActivity" />
+        <activity android:name=".activities.FavoritesActivity" />
+        <activity android:name=".activities.ReaderActivity" />
+        <activity android:name=".activities.FeedsActivity"></activity>
     </application>
 
 </manifest>

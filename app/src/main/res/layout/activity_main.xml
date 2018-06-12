@@ -5,7 +5,7 @@
     android:id="@+id/drawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="br.ufpe.cin.if1001.projeto_p3.MainActivity">
+    tools:context="br.ufpe.cin.if1001.projeto_p3.activities.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,8 +27,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="text"
-            android:text="Procura" />
+            android:hint="Search"
+            android:inputType="text" />
 
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
@@ -37,13 +37,10 @@
     </LinearLayout>
 
     <android.support.design.widget.NavigationView
-        android:id="@+id/nav_id"
+        android:id="@+id/nav_menu"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:menu="@menu/menu">
-
-    </android.support.design.widget.NavigationView>
-
+        app:menu="@menu/menu" />
 
 </android.support.v4.widget.DrawerLayout>
