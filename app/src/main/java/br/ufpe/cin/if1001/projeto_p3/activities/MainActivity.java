@@ -59,10 +59,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Intent lermaistardeIntent = new Intent(getApplicationContext(), ViewLaterActivity.class);
             startActivity(lermaistardeIntent);
         }
-        if (id == R.id.teste_menu){
-            Intent testeIntent = new Intent(getApplicationContext(), ReaderActivity.class);
-            startActivity(testeIntent);
-        }
 
         return false;
     }

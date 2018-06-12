@@ -56,10 +56,6 @@ public class ViewLaterActivity extends AppCompatActivity implements NavigationVi
             Intent inscricoesIntent = new Intent(getApplicationContext(), FeedsActivity.class);
             startActivity(inscricoesIntent);
         }
-        if (id == R.id.teste_menu){
-            Intent testeIntent = new Intent(getApplicationContext(), ReaderActivity.class);
-            startActivity(testeIntent);
-        }
 
         return false;
     }
