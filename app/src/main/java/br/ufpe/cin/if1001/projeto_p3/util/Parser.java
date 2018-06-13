@@ -12,12 +12,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import br.ufpe.cin.if1001.projeto_p3.domain.ItemRSS;
+import br.ufpe.cin.if1001.projeto_p3.domain.Article;
 
 public class Parser extends AsyncTask<String, Void, String> implements Observer {
 
     private XMLParser xmlParser;
-    private static ArrayList<ItemRSS> articles = new ArrayList<>();
+    private static ArrayList<Article> articles = new ArrayList<>();
 
     private OnTaskCompleted onComplete;
 
@@ -28,7 +28,7 @@ public class Parser extends AsyncTask<String, Void, String> implements Observer 
     }
 
     public interface OnTaskCompleted {
-        void onTaskCompleted(ArrayList<ItemRSS> list);
+        void onTaskCompleted(ArrayList<Article> list);
 
         void onError();
     }
@@ -75,7 +75,7 @@ public class Parser extends AsyncTask<String, Void, String> implements Observer 
     @Override
     @SuppressWarnings("unchecked")
     public void update(Observable observable, Object data) {
-        articles = (ArrayList<ItemRSS>) data;
+        articles = (ArrayList<Article>) data;
         onComplete.onTaskCompleted(articles);
     }
 

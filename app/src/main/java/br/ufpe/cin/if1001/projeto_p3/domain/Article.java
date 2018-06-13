@@ -4,16 +4,43 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ItemRSS {
-
+public class Article {
     private String title;
     private String author;
     private String link;
-    private Date pubDate;
+    private String pubDate;
     private String description;
     private String content;
     private String image;
-    private List<String> categories;
+    private String channel;
+    private boolean favorite;
+    private boolean readLater;
+
+    public Article(){}
+
+    public Article(
+            String title,
+            String author,
+            String link,
+            String pubDate,
+            String description,
+            String content,
+            String image,
+            String channel,
+            boolean favorite,
+            boolean readLater
+    ) {
+        this.title = title;
+        this.author = author;
+        this.link = link;
+        this.pubDate = pubDate;
+        this.description = description;
+        this.content = content;
+        this.image = image;
+        this.channel = channel;
+        this.favorite = favorite;
+        this.readLater = readLater;
+    }
 
     public String getTitle() {
         return title;
@@ -27,7 +54,7 @@ public class ItemRSS {
         return link;
     }
 
-    public Date getPubDate() {
+    public String getPubDate() {
         return pubDate;
     }
 
@@ -43,6 +70,12 @@ public class ItemRSS {
         return image;
     }
 
+    public String getChannel() { return channel; }
+
+    public boolean isReadLater() { return readLater; }
+
+    public boolean isFavorite() { return favorite; }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -55,7 +88,7 @@ public class ItemRSS {
         this.link = link;
     }
 
-    public void setPubDate(Date pubDate) {
+    public void setPubDate(String pubDate) {
         this.pubDate = pubDate;
     }
 
@@ -71,15 +104,11 @@ public class ItemRSS {
         this.image = image;
     }
 
-    public List<String> getCategories() {
-        return categories;
-    }
+    public void setChannel(String channel) { this.channel = channel; }
 
-    public void addCategory(String category) {
-        if (categories == null)
-            categories = new ArrayList<>();
-        categories.add(category);
-    }
+    public void setReadLater(boolean readLater) { this.readLater = readLater; }
+
+    public void setFavorite(boolean favorite) { this.favorite = favorite; }
 
     @Override
     public String toString() {
@@ -87,11 +116,13 @@ public class ItemRSS {
                 "title='" + title + '\'' +
                 ", author='" + author + '\'' +
                 ", link='" + link + '\'' +
-                ", pubDate=" + pubDate +
+                ", pubDate='" + pubDate + '\'' +
                 ", description='" + description + '\'' +
                 ", content='" + content + '\'' +
                 ", image='" + image + '\'' +
-                ", categories=" + categories +
+                ", channel='" + channel + '\'' +
+                ", favorite='" + favorite + '\'' +
+                ", readLater='" + readLater + '\'' +
                 '}';
     }
 }

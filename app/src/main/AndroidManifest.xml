@@ -3,7 +3,7 @@
     package="br.ufpe.cin.if1001.projeto_p3">
 
     <!-- Adicionar Internet -->
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -19,10 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.ViewLaterActivity" />
-        <activity android:name=".activities.FavoritesActivity" />
         <activity android:name=".activities.ReaderActivity" />
-        <activity android:name=".activities.FeedsActivity"></activity>
+        <activity android:name=".activities.ArticleListActivity"></activity>
     </application>
 
 </manifest>

@@ -9,23 +9,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import java.util.Objects;
+
 import br.ufpe.cin.if1001.projeto_p3.R;
 
-public class ViewLaterActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class ArticleListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
+    private boolean isFavoriteView = false;//TODO: Atribuir 'true' quando vier esta informação via intent
+    private boolean isReadLaterView = false;//TODO: Atribuir 'true' quando vier esta informação via intent
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_later);
+        setContentView(R.layout.activity_article_list);
 
-        mDrawerLayout = findViewById(R.id.drawer);
+        DrawerLayout mDrawerLayout = findViewById(R.id.drawer);
         mToggle =  new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         NavigationView navigationView = findViewById(R.id.nav_menu);
         navigationView.setNavigationItemSelectedListener(this);
@@ -33,10 +36,7 @@ public class ViewLaterActivity extends AppCompatActivity implements NavigationVi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(mToggle.onOptionsItemSelected(item)){
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return mToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -44,17 +44,19 @@ public class ViewLaterActivity extends AppCompatActivity implements NavigationVi
 
         int id = item.getItemId();
 
-        if (id == R.id.favoritos_menu){
-            Intent favoritosIntent = new Intent(getApplicationContext(), FavoritesActivity.class);
+        if (id == R.id.home_menu){
+            Intent favoritosIntent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(favoritosIntent);
         }
-        if (id == R.id.home_menu){
-            Intent homeIntent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(homeIntent);
+
+        if (id == R.id.favoritos_menu && !isFavoriteView){
+            Intent favoritosIntent = new Intent(getApplicationContext(), ArticleListActivity.class);
+            startActivity(favoritosIntent);
         }
-        if (id == R.id.inscricoes_menu){
-            Intent inscricoesIntent = new Intent(getApplicationContext(), FeedsActivity.class);
-            startActivity(inscricoesIntent);
+
+        if (id == R.id.lermaistarde_menu && !isReadLaterView){
+            Intent lermaistardeIntent = new Intent(getApplicationContext(), ArticleListActivity.class);
+            startActivity(lermaistardeIntent);
         }
 
         return false;

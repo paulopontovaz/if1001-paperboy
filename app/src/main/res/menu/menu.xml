@@ -10,9 +10,7 @@
     <item
         android:id="@+id/favoritos_menu"
         android:title="Favoritos"></item>
-    <item
-        android:id="@+id/inscricoes_menu"
-        android:title="Inscrições"></item>
+
     <item
         android:id="@+id/lermaistarde_menu"
         android:title="Ler mais tarde"></item>

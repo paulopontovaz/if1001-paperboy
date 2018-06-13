@@ -1,0 +1,238 @@
+package br.ufpe.cin.if1001.projeto_p3.db;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import br.ufpe.cin.if1001.projeto_p3.domain.Article;
+import br.ufpe.cin.if1001.projeto_p3.domain.Feed;
+
+
+public class SQLDataBaseHelper extends SQLiteOpenHelper {
+    private static final String DATABASE_NAME = "Paperboy";
+    private static final String ARTICLE_TABLE = ArticleInfo.ARTICLE_TABLE;
+    private static final String FEED_TABLE = FeedInfo.FEED_TABLE;
+    private static final int DB_VERSION = 1;
+
+    //alternativa
+    Context c;
+
+    private SQLDataBaseHelper(Context context) {
+        super(context, DATABASE_NAME, null, DB_VERSION);
+        c = context;
+    }
+
+    private static SQLDataBaseHelper db;
+
+    public static SQLDataBaseHelper getInstance(Context c) {
+        if (db==null) {
+            db = new SQLDataBaseHelper(c.getApplicationContext());
+        }
+        return db;
+    }
+
+    private static final String FEED_ROWID = FeedInfo._ID;
+    private static final String FEED_TITLE = FeedInfo.TITLE;
+    private static final String FEED_LINK = FeedInfo.LINK;
+
+    private final static String[] feed_columns = FeedInfo.ALL_COLUMNS;
+
+    private static final String ARTICLE_ROWID = ArticleInfo._ID;
+    private static final String ARTICLE_TITLE = ArticleInfo.TITLE;
+    private static final String ARTICLE_AUTHOR = ArticleInfo.AUTHOR;
+    private static final String ARTICLE_LINK = ArticleInfo.LINK;
+    private static final String ARTICLE_DATE = ArticleInfo.DATE;
+    private static final String ARTICLE_DESCRIPTION = ArticleInfo.DESCRIPTION;
+    private static final String ARTICLE_CONTENT = ArticleInfo.CONTENT;
+    private static final String ARTICLE_IMAGE = ArticleInfo.IMAGE;
+    private static final String ARTICLE_CHANNEL = ArticleInfo.CHANNEL;
+    private static final String ARTICLE_FAVORITE = ArticleInfo.FAVORITE;
+    private static final String ARTICLE_READ_LATER = ArticleInfo.READ_LATER;
+
+    private final static String[] article_columns = ArticleInfo.ALL_COLUMNS;
+
+    private static final String CREATE_ARTICLE_TABLE_COMMAND = "CREATE TABLE " + ARTICLE_TABLE + " (" +
+        ARTICLE_ROWID +" integer primary key autoincrement, "+
+        ARTICLE_TITLE + " text not null, " +
+        ARTICLE_AUTHOR + " text not null, " +
+        ARTICLE_LINK + " text not null, " +
+        ARTICLE_DATE + " text not null, " +
+        ARTICLE_DESCRIPTION + " text not null, " +
+        ARTICLE_CONTENT + " text not null, " +
+        ARTICLE_IMAGE + " text not null, " +
+        ARTICLE_CHANNEL + " text not null, " +
+        ARTICLE_FAVORITE + " boolean not null, " +
+        ARTICLE_READ_LATER + " boolean not null " +
+    ");";
+
+    private static final String CREATE_FEED_TABLE_COMMAND = "CREATE TABLE " + FEED_TABLE + " (" +
+        FEED_ROWID +" integer primary key autoincrement, "+
+        FEED_TITLE + " text not null, " +
+        FEED_LINK + " text not null " +
+    ");";
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL(CREATE_ARTICLE_TABLE_COMMAND);
+        db.execSQL(CREATE_FEED_TABLE_COMMAND);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        //estamos ignorando esta possibilidade no momento
+        throw new RuntimeException("nao se aplica");
+    }
+
+    public long insertFeed(Feed item) {
+        return insertFeed(item.getTitle(), item.getLink());
+    }
+
+    public long insertFeed(String title, String link) {
+        SQLiteDatabase dataBase = db.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(FEED_TITLE, title);
+        values.put(FEED_LINK, link);
+
+        return dataBase.insert(FEED_TABLE,null, values);
+    }
+
+    public Cursor getFeeds() throws SQLException {
+        SQLiteDatabase dataBase = db.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            dataBase.beginTransaction();
+
+            cursor = dataBase.query(
+                FEED_TABLE,
+                feed_columns,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+            );
+
+            dataBase.endTransaction();
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+        }
+
+        return cursor;
+    }
+
+    /*
+    * TODO: Implementar updateItem
+    * */
+
+    /*
+    * TODO: Implementar deleteItem
+    * - O artigo só deve ser excluído se, ao atualizá-lo (no updateItem), ele
+    * não for mais 'favorite' nem 'readLater'.
+    * */
+
+    public long insertArticle(Article item) {
+        return insertArticle(
+            item.getTitle(),
+            item.getAuthor(),
+            item.getLink(),
+            item.getPubDate(),
+            item.getDescription(),
+            item.getContent(),
+            item.getImage(),
+            item.getChannel(),
+            item.isFavorite(),
+            item.isReadLater()
+        );
+    }
+
+    //Inserindo itens novos no banco utilizando ContentValues.
+    public long insertArticle(
+        String title,
+        String author,
+        String link,
+        String pubDate,
+        String description,
+        String content,
+        String image,
+        String channel,
+        boolean favorite,
+        boolean readLater
+    ) {
+        SQLiteDatabase dataBase = db.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ARTICLE_TITLE, title);
+        values.put(ARTICLE_AUTHOR, author);
+        values.put(ARTICLE_LINK, link);
+        values.put(ARTICLE_DATE, pubDate);
+        values.put(ARTICLE_DESCRIPTION, description);
+        values.put(ARTICLE_CONTENT, content);
+        values.put(ARTICLE_IMAGE, image);
+        values.put(ARTICLE_CHANNEL, channel);
+        values.put(ARTICLE_FAVORITE, favorite);
+        values.put(ARTICLE_READ_LATER, readLater);
+
+        return dataBase.insert(ARTICLE_TABLE,null, values);
+    }
+
+    public Article getArticleByLink(String link) throws SQLException {
+        SQLiteDatabase dataBase = db.getReadableDatabase();
+        Cursor cursor = dataBase.query(
+                ARTICLE_TABLE,
+                article_columns,
+                ARTICLE_LINK + " LIKE ?", //WHERE -> filtrando a consulta pelo link
+                new String[]{ link },
+                null,
+                null,
+                null,
+                null);
+        Article item = null;
+        if(cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            item = new Article(
+                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_TITLE)),
+                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_AUTHOR)),
+                link,
+                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_DATE)),
+                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_DESCRIPTION)),
+                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_CONTENT)),
+                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_IMAGE)),
+                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_CHANNEL)),
+                cursor.getInt(cursor.getColumnIndexOrThrow(ARTICLE_FAVORITE)) == 1,
+                cursor.getInt(cursor.getColumnIndexOrThrow(ARTICLE_READ_LATER)) == 1
+            );
+        }
+
+        return item;
+    }
+    public Cursor getArticles() throws SQLException {
+        SQLiteDatabase dataBase = db.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            dataBase.beginTransaction();
+
+            cursor = dataBase.query(
+                    ARTICLE_TABLE,
+                    article_columns,
+                    null,
+                    null,
+                    null,
+                    null,
+                    ARTICLE_DATE + " DESC",
+                    null
+            );
+
+            dataBase.endTransaction();
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+        }
+
+        return cursor;
+    }
+
+}

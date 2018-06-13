@@ -12,16 +12,16 @@ import java.util.Observable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import br.ufpe.cin.if1001.projeto_p3.domain.ItemRSS;
+import br.ufpe.cin.if1001.projeto_p3.domain.Article;
 
 public class XMLParser extends Observable {
 
-    private ArrayList<ItemRSS> articles;
-    private ItemRSS currentArticle;
+    private ArrayList<Article> articles;
+    private Article currentArticle;
 
     public XMLParser() {
         articles = new ArrayList<>();
-        currentArticle = new ItemRSS();
+        currentArticle = new Article();
     }
 
     public void parseXML(String xml) throws XmlPullParserException, IOException {
@@ -59,12 +59,6 @@ public class XMLParser extends Observable {
                         currentArticle.setAuthor(author);
                     }
 
-                } else if (xmlPullParser.getName().equalsIgnoreCase("category")) {
-                    if (insideItem) {
-                        String category = xmlPullParser.nextText();
-                        currentArticle.addCategory(category);
-                    }
-
                 } else if (xmlPullParser.getName().equalsIgnoreCase("media:thumbnail")) {
                     if (insideItem) {
                         String img = xmlPullParser.getAttributeValue(null, "url");
@@ -90,14 +84,14 @@ public class XMLParser extends Observable {
                     }
 
                 } else if (xmlPullParser.getName().equalsIgnoreCase("pubDate")) {
-                    Date pubDate = new Date(xmlPullParser.nextText());
+                    String pubDate = xmlPullParser.nextText();
                     currentArticle.setPubDate(pubDate);
                 }
 
             } else if (eventType == XmlPullParser.END_TAG && xmlPullParser.getName().equalsIgnoreCase("item")) {
                 insideItem = false;
                 articles.add(currentArticle);
-                currentArticle = new ItemRSS();
+                currentArticle = new Article();
             }
             eventType = xmlPullParser.next();
         }

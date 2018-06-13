@@ -9,6 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Objects;
 
@@ -16,7 +19,6 @@ import br.ufpe.cin.if1001.projeto_p3.R;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
 
     @Override
@@ -24,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mDrawerLayout = findViewById(R.id.drawer);
+        DrawerLayout mDrawerLayout = findViewById(R.id.drawer);
         mToggle =  new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
@@ -36,10 +38,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(mToggle.onOptionsItemSelected(item)){
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return mToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -48,20 +47,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.favoritos_menu){
-            Intent favoritosIntent = new Intent(getApplicationContext(), FavoritesActivity.class);
+            Intent favoritosIntent = new Intent(getApplicationContext(), ArticleListActivity.class);
+            //TODO: Definir no intent um parâmetro para sinalizar que a Activity de destino será 'Favoritos'.
             startActivity(favoritosIntent);
         }
-        if (id == R.id.inscricoes_menu){
-            Intent inscricoesIntent = new Intent(getApplicationContext(), FeedsActivity.class);
-            startActivity(inscricoesIntent);
-        }
         if (id == R.id.lermaistarde_menu){
-            Intent lermaistardeIntent = new Intent(getApplicationContext(), ViewLaterActivity.class);
+            Intent lermaistardeIntent = new Intent(getApplicationContext(), ArticleListActivity.class);
+            //TODO: Definir no intent um parâmetro para sinalizar que a Activity de destino será 'Ler Depois'.
             startActivity(lermaistardeIntent);
         }
 
         return false;
     }
 
+    public void addFeed(View view) {
+        EditText feedLinkTextView = findViewById(R.id.feedLinkText);
+        String feedLink;
+        feedLink = feedLinkTextView.getText().toString();
+    }
 }
 
