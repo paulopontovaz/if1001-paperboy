@@ -7,6 +7,12 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import br.ufpe.cin.if1001.projeto_p3.domain.Article;
 import br.ufpe.cin.if1001.projeto_p3.domain.Feed;
 
@@ -155,7 +161,7 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
         String title,
         String author,
         String link,
-        String pubDate,
+        Date pubDate,
         String description,
         String content,
         String image,
@@ -168,7 +174,7 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
         values.put(ARTICLE_TITLE, title);
         values.put(ARTICLE_AUTHOR, author);
         values.put(ARTICLE_LINK, link);
-        values.put(ARTICLE_DATE, pubDate);
+        values.put(ARTICLE_DATE, pubDate.toString());
         values.put(ARTICLE_DESCRIPTION, description);
         values.put(ARTICLE_CONTENT, content);
         values.put(ARTICLE_IMAGE, image);
@@ -190,14 +196,24 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
                 null,
                 null,
                 null);
+
         Article item = null;
         if(cursor.getCount() > 0) {
             cursor.moveToFirst();
+
+            DateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.getDefault());
+            Date date = null;
+            try {
+                date = format.parse(cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_DATE)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
             item = new Article(
                 cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_TITLE)),
                 cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_AUTHOR)),
                 link,
-                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_DATE)),
+                date,
                 cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_DESCRIPTION)),
                 cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_CONTENT)),
                 cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_IMAGE)),

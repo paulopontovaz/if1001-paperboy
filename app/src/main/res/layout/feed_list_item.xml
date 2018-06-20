@@ -20,14 +20,14 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textViewTitle"
+            android:id="@+id/title"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_toRightOf="@id/imageView"
+            android:layout_toRightOf="@id/image"
             android:backgroundTint="@android:color/background_dark"
             android:text="Apple MacBook Air Core i5 5th Gen - (8 GB/128 GB SSD/Mac OS Sierra)"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
@@ -48,9 +48,9 @@
             android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
             android:background="@android:color/transparent"
-            app:layout_constraintBottom_toBottomOf="@+id/textViewTitle"
+            app:layout_constraintBottom_toBottomOf="@+id/title"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textViewTitle"
+            app:layout_constraintTop_toTopOf="@+id/title"
             app:srcCompat="@drawable/ic_delete_black_24dp" />
 
     </android.support.constraint.ConstraintLayout>

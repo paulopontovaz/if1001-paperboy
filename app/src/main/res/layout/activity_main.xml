@@ -34,12 +34,14 @@
             android:ems="10"
             android:hint="Novo Feed (Link)"
             android:inputType="textPersonName"
+            android:text="http://leopoldomt.com/if1001/g1brasil.xml"
             app:layout_constraintEnd_toStartOf="@+id/addButton"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/title" />
 
         <android.support.v7.widget.RecyclerView
+            android:id="@+id/feedList"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
@@ -52,7 +54,7 @@
             app:layout_constraintTop_toBottomOf="@+id/feedLinkText" />
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/mainViewTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"

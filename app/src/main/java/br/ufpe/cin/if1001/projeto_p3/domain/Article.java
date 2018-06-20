@@ -1,14 +1,12 @@
 package br.ufpe.cin.if1001.projeto_p3.domain;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class Article {
     private String title;
     private String author;
     private String link;
-    private String pubDate;
+    private Date pubDate;
     private String description;
     private String content;
     private String image;
@@ -22,7 +20,7 @@ public class Article {
             String title,
             String author,
             String link,
-            String pubDate,
+            Date pubDate,
             String description,
             String content,
             String image,
@@ -54,7 +52,7 @@ public class Article {
         return link;
     }
 
-    public String getPubDate() {
+    public Date getPubDate() {
         return pubDate;
     }
 
@@ -88,7 +86,7 @@ public class Article {
         this.link = link;
     }
 
-    public void setPubDate(String pubDate) {
+    public void setPubDate(Date pubDate) {
         this.pubDate = pubDate;
     }
 

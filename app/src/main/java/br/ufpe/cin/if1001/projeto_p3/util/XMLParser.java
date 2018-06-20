@@ -6,8 +6,12 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Observable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -84,7 +88,13 @@ public class XMLParser extends Observable {
                     }
 
                 } else if (xmlPullParser.getName().equalsIgnoreCase("pubDate")) {
-                    String pubDate = xmlPullParser.nextText();
+                    DateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.getDefault());
+                    Date pubDate = null;
+                    try {
+                        pubDate = format.parse(xmlPullParser.nextText());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                     currentArticle.setPubDate(pubDate);
                 }
 
