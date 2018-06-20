@@ -16,24 +16,31 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import br.ufpe.cin.if1001.projeto_p3.R;
+import br.ufpe.cin.if1001.projeto_p3.db.SQLDataBaseHelper;
 import br.ufpe.cin.if1001.projeto_p3.domain.Article;
+import br.ufpe.cin.if1001.projeto_p3.domain.Feed;
 import br.ufpe.cin.if1001.projeto_p3.util.ArticleAdapter;
+import br.ufpe.cin.if1001.projeto_p3.util.FeedAdapter;
 import br.ufpe.cin.if1001.projeto_p3.util.Parser;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private ActionBarDrawerToggle mToggle;
     private RecyclerView mRecyclerView;
-    private ArticleAdapter mAdapter;
+    private FeedAdapter mFeedAdapter;
+    private ArticleAdapter mArticleAdapter;
+    private SQLDataBaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        db = SQLDataBaseHelper.getInstance(getApplicationContext());
         DrawerLayout mDrawerLayout = findViewById(R.id.drawer);
         mToggle =  new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
         mDrawerLayout.addDrawerListener(mToggle);
@@ -47,6 +54,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setHasFixedSize(true);
+
+        ArrayList<Feed> feeds = db.getFeeds();
+        mFeedAdapter = new FeedAdapter(feeds, R.layout.feed_list_item, MainActivity.this);
+        mRecyclerView.setAdapter(mFeedAdapter);
     }
 
     @Override
@@ -73,7 +84,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
-    public void addFeed(View view) {
+    public void addFeed (View view){
+        EditText feedLinkTextView = findViewById(R.id.feedLinkText);
+        String feedLink;
+        feedLink = feedLinkTextView.getText().toString();
+
+        db.insertFeed(feedLink, feedLink);
+
+        ArrayList<Feed> feeds = db.getFeeds();
+    }
+
+    public void getArticles(View view) {
         EditText feedLinkTextView = findViewById(R.id.feedLinkText);
         String feedLink;
         feedLink = feedLinkTextView.getText().toString();
@@ -84,8 +105,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         parser.onFinish(new Parser.OnTaskCompleted() {
             @Override
             public void onTaskCompleted(ArrayList<Article> list) {
-                mAdapter = new ArticleAdapter(list, R.layout.article_list_item, MainActivity.this);
-                mRecyclerView.setAdapter(mAdapter);
+                mArticleAdapter = new ArticleAdapter(list, R.layout.article_list_item, MainActivity.this);
+                mRecyclerView.setAdapter(mArticleAdapter);
             }
 
             //what to do in case of error

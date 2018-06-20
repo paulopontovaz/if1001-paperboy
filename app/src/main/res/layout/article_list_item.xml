@@ -35,7 +35,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/feedLink"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginEnd="8dp"
@@ -54,7 +54,7 @@
             android:id="@+id/pubDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/title"
+            android:layout_below="@id/feedLink"
             android:layout_marginBottom="8dp"
             android:layout_marginStart="8dp"
             android:layout_toRightOf="@id/image"
@@ -73,7 +73,7 @@
             android:background="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/title"
+            app:layout_constraintTop_toBottomOf="@+id/feedLink"
             app:srcCompat="@drawable/ic_access_time_black_32dp" />
 
     </android.support.constraint.ConstraintLayout>

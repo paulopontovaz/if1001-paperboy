@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -105,7 +106,7 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
         return dataBase.insert(FEED_TABLE,null, values);
     }
 
-    public Cursor getFeeds() throws SQLException {
+    public ArrayList<Feed> getFeeds() throws SQLException {
         SQLiteDatabase dataBase = db.getReadableDatabase();
         Cursor cursor = null;
 
@@ -128,7 +129,16 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
             System.out.println(e.toString());
         }
 
-        return cursor;
+        ArrayList<Feed> feeds = new ArrayList<Feed>();
+        for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            // The Cursor is now set to the right position
+            feeds.add(new Feed(
+                cursor.getString(cursor.getColumnIndexOrThrow(FEED_LINK)),
+                cursor.getString(cursor.getColumnIndexOrThrow(FEED_TITLE))
+            ));
+        }
+
+        return feeds;
     }
 
     /*

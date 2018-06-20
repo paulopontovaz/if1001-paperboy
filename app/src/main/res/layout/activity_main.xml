@@ -17,13 +17,12 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:onClick="addFeed"
             android:text="ADICIONAR"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/feedLinkText"
-            app:layout_constraintTop_toBottomOf="@+id/title" />
+            app:layout_constraintTop_toTopOf="@+id/feedLinkText" />
 
         <EditText
             android:id="@+id/feedLinkText"
@@ -38,7 +37,7 @@
             app:layout_constraintEnd_toStartOf="@+id/addButton"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/title" />
+            app:layout_constraintTop_toBottomOf="@+id/mainViewTitle" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/feedList"

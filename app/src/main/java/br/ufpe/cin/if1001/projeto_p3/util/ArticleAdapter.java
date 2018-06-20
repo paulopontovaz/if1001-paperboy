@@ -1,10 +1,8 @@
 package br.ufpe.cin.if1001.projeto_p3.util;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +20,6 @@ import java.util.Locale;
 
 import br.ufpe.cin.if1001.projeto_p3.R;
 import br.ufpe.cin.if1001.projeto_p3.domain.Article;
-
-/**
- * Created by Marco Gomiero on 12/02/2015.
- */
 
 public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHolder> {
 
@@ -77,7 +71,6 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
             @Override
             public void onClick(View view) {
 
-                //show article content inside a dialog
                 articleView = new WebView(mContext);
 
                 articleView.getSettings().setLoadWithOverviewMode(true);
@@ -91,19 +84,6 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
                 articleView.loadDataWithBaseURL(null, "<style>img{display: inline; height: auto; max-width: 100%;} " +
 
                         "</style>\n" + "<style>iframe{ height: auto; width: auto;}" + "</style>\n" + content, null, "utf-8", null);
-
-                android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(mContext).create();
-                alertDialog.setTitle(title);
-                alertDialog.setView(articleView);
-                alertDialog.setButton(android.support.v7.app.AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                alertDialog.show();
-
-                ((TextView) alertDialog.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
             }
         });
     }
@@ -123,7 +103,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         public ViewHolder(View itemView) {
 
             super(itemView);
-            title = itemView.findViewById(R.id.title);
+            title = itemView.findViewById(R.id.feedLink);
             pubDate = itemView.findViewById(R.id.pubDate);
             image = itemView.findViewById(R.id.image);
         }
