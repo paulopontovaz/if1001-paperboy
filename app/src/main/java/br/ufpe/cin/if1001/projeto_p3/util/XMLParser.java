@@ -1,5 +1,7 @@
 package br.ufpe.cin.if1001.projeto_p3.util;
 
+import android.support.v4.util.Pair;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -22,9 +24,12 @@ public class XMLParser extends Observable {
 
     private ArrayList<Article> articles;
     private Article currentArticle;
+    private String feedTitle;
+    private Pair<String, ArrayList<Article>> xmlData;
 
     public XMLParser() {
         articles = new ArrayList<>();
+        feedTitle = "";
         currentArticle = new Article();
     }
 
@@ -37,11 +42,19 @@ public class XMLParser extends Observable {
 
         xmlPullParser.setInput(new StringReader(xml));
         boolean insideItem = false;
+        boolean insideChannel = false;
         int eventType = xmlPullParser.getEventType();
 
         while (eventType != XmlPullParser.END_DOCUMENT) {
-
             if (eventType == XmlPullParser.START_TAG) {
+                if (xmlPullParser.getName().equalsIgnoreCase("channel"))
+                    insideChannel = true;
+
+                if (insideChannel && xmlPullParser.getName().equalsIgnoreCase("title")) {
+                    feedTitle = xmlPullParser.nextText();
+                    insideChannel = false;
+                }
+
                 if (xmlPullParser.getName().equalsIgnoreCase("item")) {
                     insideItem = true;
 
@@ -105,13 +118,14 @@ public class XMLParser extends Observable {
             }
             eventType = xmlPullParser.next();
         }
+        xmlData = new Pair<>(feedTitle, articles);
         triggerObserver();
     }
 
 
     private void triggerObserver() {
         setChanged();
-        notifyObservers(articles);
+        notifyObservers(xmlData);
     }
 
     private String getImageUrl(String input) {

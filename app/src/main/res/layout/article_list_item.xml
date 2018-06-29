@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/image"
+            android:id="@+id/articleImage"
             android:layout_width="120dp"
             android:layout_height="0dp"
             android:layout_alignParentStart="true"
@@ -30,41 +30,41 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:padding="4dp"
-            app:layout_constraintBottom_toTopOf="@+id/pubDate"
+            app:layout_constraintBottom_toTopOf="@+id/articlePubDate"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/feedLink"
+            android:id="@+id/articleTitle"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_toRightOf="@id/image"
+            android:layout_toRightOf="@id/articleImage"
             android:text="Apple MacBook Air Core i5 5th Gen - (8 GB/128 GB SSD/Mac OS Sierra)"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
             android:textColor="#000000"
-            app:layout_constraintBottom_toBottomOf="@+id/image"
+            app:layout_constraintBottom_toBottomOf="@+id/articleImage"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/image"
+            app:layout_constraintStart_toEndOf="@+id/articleImage"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/pubDate"
+            android:id="@+id/articlePubDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/feedLink"
+            android:layout_below="@id/feedTitle"
             android:layout_marginBottom="8dp"
             android:layout_marginStart="8dp"
-            android:layout_toRightOf="@id/image"
+            android:layout_toRightOf="@id/articleImage"
             android:text="09/04/1996"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <ImageButton
-            android:id="@+id/imageButton3"
+            android:id="@+id/articleViewLaterButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -73,7 +73,7 @@
             android:background="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/feedLink"
+            app:layout_constraintTop_toBottomOf="@+id/feedTitle"
             app:srcCompat="@drawable/ic_access_time_black_32dp" />
 
     </android.support.constraint.ConstraintLayout>

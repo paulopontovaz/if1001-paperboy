@@ -101,11 +101,10 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         ImageView image;
 
         public ViewHolder(View itemView) {
-
             super(itemView);
-            title = itemView.findViewById(R.id.feedLink);
-            pubDate = itemView.findViewById(R.id.pubDate);
-            image = itemView.findViewById(R.id.image);
+            title = itemView.findViewById(R.id.title);
+            pubDate = itemView.findViewById(R.id.articlePubDate);
+            image = itemView.findViewById(R.id.articleImage);
         }
     }
 }

@@ -1,6 +1,7 @@
 package br.ufpe.cin.if1001.projeto_p3.util;
 
 import android.os.AsyncTask;
+import android.support.v4.util.Pair;
 import android.util.Log;
 
 import java.io.IOException;
@@ -17,7 +18,6 @@ import br.ufpe.cin.if1001.projeto_p3.domain.Article;
 public class Parser extends AsyncTask<String, Void, String> implements Observer {
 
     private XMLParser xmlParser;
-    private static ArrayList<Article> articles = new ArrayList<>();
 
     private OnTaskCompleted onComplete;
 
@@ -28,8 +28,7 @@ public class Parser extends AsyncTask<String, Void, String> implements Observer 
     }
 
     public interface OnTaskCompleted {
-        void onTaskCompleted(ArrayList<Article> list);
-
+        void onTaskCompleted(Pair<String, ArrayList<Article>> xmlData);
         void onError();
     }
 
@@ -38,12 +37,12 @@ public class Parser extends AsyncTask<String, Void, String> implements Observer 
     }
 
     @Override
-    protected String doInBackground(String... ulr) {
+    protected String doInBackground(String... url) {
 
         Response response = null;
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(ulr[0])
+                .url(url[0])
                 .build();
 
         try {
@@ -75,8 +74,8 @@ public class Parser extends AsyncTask<String, Void, String> implements Observer 
     @Override
     @SuppressWarnings("unchecked")
     public void update(Observable observable, Object data) {
-        articles = (ArrayList<Article>) data;
-        onComplete.onTaskCompleted(articles);
+        Pair<String, ArrayList<Article>> xmlData = (Pair<String, ArrayList<Article>>) data;
+        onComplete.onTaskCompleted(xmlData);
     }
 
 }

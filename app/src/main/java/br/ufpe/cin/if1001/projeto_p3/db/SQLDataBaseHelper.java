@@ -141,6 +141,11 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
         return feeds;
     }
 
+    public int deleteFeed (String link) {
+        return db.getReadableDatabase()
+            .delete(FEED_TABLE, FEED_LINK + "=?", new String[]{ link });
+    }
+
     /*
     * TODO: Implementar updateItem
     * */

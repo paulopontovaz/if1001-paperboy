@@ -1,10 +1,12 @@
 package br.ufpe.cin.if1001.projeto_p3.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -13,26 +15,26 @@ import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import br.ufpe.cin.if1001.projeto_p3.R;
 import br.ufpe.cin.if1001.projeto_p3.db.SQLDataBaseHelper;
-import br.ufpe.cin.if1001.projeto_p3.domain.Article;
 import br.ufpe.cin.if1001.projeto_p3.domain.Feed;
-import br.ufpe.cin.if1001.projeto_p3.util.ArticleAdapter;
 import br.ufpe.cin.if1001.projeto_p3.util.FeedAdapter;
-import br.ufpe.cin.if1001.projeto_p3.util.Parser;
+
+import static br.ufpe.cin.if1001.projeto_p3.util.Constants.ADD_FEED;
+import static br.ufpe.cin.if1001.projeto_p3.util.Constants.ARTICLE_LIST_ACTIVITY_ACTION;
+import static br.ufpe.cin.if1001.projeto_p3.util.Constants.FEED_LINK;
+import static br.ufpe.cin.if1001.projeto_p3.util.Constants.GET_FAVORITE_ARTICLES;
+import static br.ufpe.cin.if1001.projeto_p3.util.Constants.GET_READ_LATER_ARTICLES;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private ActionBarDrawerToggle mToggle;
     private RecyclerView mRecyclerView;
     private FeedAdapter mFeedAdapter;
-    private ArticleAdapter mArticleAdapter;
     private SQLDataBaseHelper db;
 
     @Override
@@ -67,20 +69,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
         int id = item.getItemId();
+        Intent articleListActivity = new Intent(getApplicationContext(), ArticleListActivity.class);
 
-        if (id == R.id.favoritos_menu){
-            Intent favoritosIntent = new Intent(getApplicationContext(), ArticleListActivity.class);
-            //TODO: Definir no intent um parâmetro para sinalizar que a Activity de destino será 'Favoritos'.
-            startActivity(favoritosIntent);
-        }
-        if (id == R.id.lermaistarde_menu){
-            Intent lermaistardeIntent = new Intent(getApplicationContext(), ArticleListActivity.class);
-            //TODO: Definir no intent um parâmetro para sinalizar que a Activity de destino será 'Ler Depois'.
-            startActivity(lermaistardeIntent);
-        }
+        if (id == R.id.favoritos_menu)
+            articleListActivity.putExtra(ARTICLE_LIST_ACTIVITY_ACTION, GET_FAVORITE_ARTICLES);
 
+        if (id == R.id.lermaistarde_menu)
+            articleListActivity.putExtra(ARTICLE_LIST_ACTIVITY_ACTION, GET_READ_LATER_ARTICLES);
+
+        startActivity(articleListActivity);
         return false;
     }
 
@@ -89,39 +87,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String feedLink;
         feedLink = feedLinkTextView.getText().toString();
 
-        db.insertFeed(feedLink, feedLink);
-
-        ArrayList<Feed> feeds = db.getFeeds();
+        Intent articleListActivity = new Intent(this, ArticleListActivity.class);
+        articleListActivity.putExtra(ARTICLE_LIST_ACTIVITY_ACTION, ADD_FEED);
+        articleListActivity.putExtra(FEED_LINK, feedLink);
+        startActivity(articleListActivity);
     }
 
-    public void getArticles(View view) {
-        EditText feedLinkTextView = findViewById(R.id.feedLinkText);
-        String feedLink;
-        feedLink = feedLinkTextView.getText().toString();
+    public void deleteFeed (View view) {
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.excluirFeedTitle)
+            .setMessage(R.string.excluirFeedText)
+            .setPositiveButton(R.string.negativeButtonText, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    System.out.println("onClick");
+//                    db.deleteFeed();
+                }
 
-        Parser parser = new Parser();
-        parser.execute(feedLink);
-
-        parser.onFinish(new Parser.OnTaskCompleted() {
-            @Override
-            public void onTaskCompleted(ArrayList<Article> list) {
-                mArticleAdapter = new ArticleAdapter(list, R.layout.article_list_item, MainActivity.this);
-                mRecyclerView.setAdapter(mArticleAdapter);
-            }
-
-            //what to do in case of error
-            @Override
-            public void onError() {
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MainActivity.this, "Unable to load data.",
-                                Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        });
+            })
+            .setNegativeButton(R.string.negativeButtonText, null)
+            .show();
     }
 }
 

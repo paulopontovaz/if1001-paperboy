@@ -1,23 +1,28 @@
 package br.ufpe.cin.if1001.projeto_p3.util;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import br.ufpe.cin.if1001.projeto_p3.R;
+import br.ufpe.cin.if1001.projeto_p3.db.SQLDataBaseHelper;
 import br.ufpe.cin.if1001.projeto_p3.domain.Feed;
 
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     private ArrayList<Feed> feeds;
+    private SQLDataBaseHelper db;
 
     private int rowLayout;
     private Context mContext;
@@ -48,6 +53,25 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
         viewHolder.title.setText(currentFeed.getTitle());
         viewHolder.link.setText(currentFeed.getLink());
+        viewHolder.deleteFeedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(mContext)
+                    .setTitle(R.string.excluirFeedTitle)
+                    .setMessage(R.string.excluirFeedText)
+                    .setPositiveButton(R.string.positiveButtonText, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            SQLDataBaseHelper db = SQLDataBaseHelper.getInstance(mContext);
+                            db.deleteFeed(viewHolder.link.getText().toString());
+                        }
+
+                    })
+                    .setNegativeButton(R.string.negativeButtonText, null)
+                    .show();
+            }
+        });
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
 
@@ -78,12 +102,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView title;
         TextView link;
+        ImageButton deleteFeedButton;
+
 
         public ViewHolder(View itemView) {
-
             super(itemView);
-            title = itemView.findViewById(R.id.feedLink);
-            link = itemView.findViewById(R.id.feedLink);
+            title = itemView.findViewById(R.id.feedTitle);
+            link = itemView.findViewById(R.id.feedTitle);
+            deleteFeedButton = itemView.findViewById(R.id.deleteFeedButton);
         }
     }
 }
