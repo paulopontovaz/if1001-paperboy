@@ -54,8 +54,12 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
 
         Locale.setDefault(Locale.getDefault());
         Date date = currentArticle.getPubDate();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
-        final String pubDateString = sdf.format(date);
+
+        if (date != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
+            final String pubDateString = sdf.format(date);
+            viewHolder.pubDate.setText(pubDateString);
+        }
 
         viewHolder.title.setText(currentArticle.getTitle());
 
@@ -63,8 +67,6 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
                 .load(currentArticle.getImage())
                 .placeholder(R.drawable.placeholder)
                 .into(viewHolder.image);
-
-        viewHolder.pubDate.setText(pubDateString);
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
 
@@ -102,7 +104,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
 
         public ViewHolder(View itemView) {
             super(itemView);
-            title = itemView.findViewById(R.id.title);
+            title = itemView.findViewById(R.id.articleTitle);
             pubDate = itemView.findViewById(R.id.articlePubDate);
             image = itemView.findViewById(R.id.articleImage);
         }

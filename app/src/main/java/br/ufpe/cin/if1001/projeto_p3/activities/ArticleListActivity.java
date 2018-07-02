@@ -136,7 +136,7 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(ArticleListActivity.this, "Unable to load data.",
+                        Toast.makeText(ArticleListActivity.this, "Erro ao ler XML",
                                 Toast.LENGTH_LONG).show();
                     }
                 });

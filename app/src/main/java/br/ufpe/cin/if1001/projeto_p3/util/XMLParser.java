@@ -118,6 +118,7 @@ public class XMLParser extends Observable {
             }
             eventType = xmlPullParser.next();
         }
+
         xmlData = new Pair<>(feedTitle, articles);
         triggerObserver();
     }

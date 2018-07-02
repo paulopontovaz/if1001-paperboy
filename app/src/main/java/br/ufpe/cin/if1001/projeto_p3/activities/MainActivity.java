@@ -1,12 +1,10 @@
 package br.ufpe.cin.if1001.projeto_p3.activities;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -91,23 +89,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         articleListActivity.putExtra(ARTICLE_LIST_ACTIVITY_ACTION, ADD_FEED);
         articleListActivity.putExtra(FEED_LINK, feedLink);
         startActivity(articleListActivity);
-    }
-
-    public void deleteFeed (View view) {
-        new AlertDialog.Builder(this)
-            .setTitle(R.string.excluirFeedTitle)
-            .setMessage(R.string.excluirFeedText)
-            .setPositiveButton(R.string.negativeButtonText, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    System.out.println("onClick");
-//                    db.deleteFeed();
-                }
-
-            })
-            .setNegativeButton(R.string.negativeButtonText, null)
-            .show();
     }
 }
 

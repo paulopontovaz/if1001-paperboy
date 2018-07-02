@@ -133,17 +133,18 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
         for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             // The Cursor is now set to the right position
             feeds.add(new Feed(
-                cursor.getString(cursor.getColumnIndexOrThrow(FEED_LINK)),
-                cursor.getString(cursor.getColumnIndexOrThrow(FEED_TITLE))
+                cursor.getString(cursor.getColumnIndexOrThrow(FEED_TITLE)),
+                cursor.getString(cursor.getColumnIndexOrThrow(FEED_LINK))
             ));
         }
 
         return feeds;
     }
 
-    public int deleteFeed (String link) {
+    public boolean deleteFeed (String link) {
         return db.getReadableDatabase()
-            .delete(FEED_TABLE, FEED_LINK + "=?", new String[]{ link });
+            .delete(FEED_TABLE, FEED_LINK + "=?", new String[]{ link }) > 0;
+//        .delete(FEED_TABLE,null, null) > 0;
     }
 
     /*

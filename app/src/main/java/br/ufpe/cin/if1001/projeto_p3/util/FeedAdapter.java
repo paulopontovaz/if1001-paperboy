@@ -2,22 +2,26 @@ package br.ufpe.cin.if1001.projeto_p3.util;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import br.ufpe.cin.if1001.projeto_p3.R;
+import br.ufpe.cin.if1001.projeto_p3.activities.ArticleListActivity;
 import br.ufpe.cin.if1001.projeto_p3.db.SQLDataBaseHelper;
 import br.ufpe.cin.if1001.projeto_p3.domain.Feed;
+
+import static br.ufpe.cin.if1001.projeto_p3.util.Constants.*;
 
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
@@ -49,7 +53,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
 
-        Feed currentFeed = feeds.get(position);
+        final Feed currentFeed = feeds.get(position);
 
         viewHolder.title.setText(currentFeed.getTitle());
         viewHolder.link.setText(currentFeed.getLink());
@@ -64,7 +68,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             SQLDataBaseHelper db = SQLDataBaseHelper.getInstance(mContext);
-                            db.deleteFeed(viewHolder.link.getText().toString());
+                            String link = viewHolder.link.getText().toString();
+                            String title = viewHolder.title.getText().toString();
+
+                            if(db.deleteFeed(link))
+                                removeFeed(link, title);
                         }
 
                     })
@@ -77,21 +85,32 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
             @Override
             public void onClick(View view) {
-                feedView = new WebView(mContext);
-
-                feedView.getSettings().setLoadWithOverviewMode(true);
-
-                String title = feeds.get(viewHolder.getAdapterPosition()).getTitle();
-                String link = feeds.get(viewHolder.getAdapterPosition()).getLink();
-
-                feedView.getSettings().setJavaScriptEnabled(true);
-                feedView.setHorizontalScrollBarEnabled(false);
-                feedView.setWebChromeClient(new WebChromeClient());
-                feedView.loadDataWithBaseURL(null, "<style>img{display: inline; height: auto; max-width: 100%;} " +
-
-                        "</style>\n" + "<style>iframe{ height: auto; width: auto;}" + "</style>\n" + link, null, "utf-8", null);
+                Intent articleListActivity = new Intent(mContext, ArticleListActivity.class);
+                articleListActivity.putExtra(ARTICLE_LIST_ACTIVITY_ACTION, GET_FEED_ARTICLES);
+                articleListActivity.putExtra(FEED_LINK, currentFeed.getLink());
+                mContext.startActivity(articleListActivity);
             }
         });
+    }
+
+    private void removeFeed (String link, String title) {
+        for (int i = 0; i < feeds.size(); i++) {
+            if (feeds.get(i).getLink() == link) {
+                feeds.remove(i);
+                notifyFeedRemoval(title);
+                notifyItemRemoved(i);
+                notifyItemRangeChanged(i, feeds.size());
+                break;
+            }
+        }
+    }
+
+    private void notifyFeedRemoval (String title) {
+        Toast.makeText(
+                mContext,
+                String.format("%s was removed!", title),
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
     @Override
@@ -108,7 +127,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         public ViewHolder(View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.feedTitle);
-            link = itemView.findViewById(R.id.feedTitle);
+            link = itemView.findViewById(R.id.feedLink);
             deleteFeedButton = itemView.findViewById(R.id.deleteFeedButton);
         }
     }
