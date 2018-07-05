@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,25 +20,20 @@ import java.util.Date;
 import java.util.Locale;
 
 import br.ufpe.cin.if1001.projeto_p3.R;
+import br.ufpe.cin.if1001.projeto_p3.db.SQLDataBaseHelper;
 import br.ufpe.cin.if1001.projeto_p3.domain.Article;
 
 public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHolder> {
 
     private ArrayList<Article> articles;
-
+    private SQLDataBaseHelper db;
     private int rowLayout;
     private Context mContext;
-    private WebView articleView;
 
     public ArticleAdapter(ArrayList<Article> list, int rowLayout, Context context) {
         this.articles = list;
         this.rowLayout = rowLayout;
         this.mContext = context;
-    }
-
-    public void clearData() {
-        if (articles != null)
-            articles.clear();
     }
 
     @NonNull
@@ -50,7 +46,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
 
-        Article currentArticle = articles.get(position);
+        final Article currentArticle = articles.get(position);
 
         Locale.setDefault(Locale.getDefault());
         Date date = currentArticle.getPubDate();
@@ -73,19 +69,19 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
             @Override
             public void onClick(View view) {
 
-                articleView = new WebView(mContext);
+            }
+        });
 
-                articleView.getSettings().setLoadWithOverviewMode(true);
-
-                String title = articles.get(viewHolder.getAdapterPosition()).getTitle();
-                String content = articles.get(viewHolder.getAdapterPosition()).getContent();
-
-                articleView.getSettings().setJavaScriptEnabled(true);
-                articleView.setHorizontalScrollBarEnabled(false);
-                articleView.setWebChromeClient(new WebChromeClient());
-                articleView.loadDataWithBaseURL(null, "<style>img{display: inline; height: auto; max-width: 100%;} " +
-
-                        "</style>\n" + "<style>iframe{ height: auto; width: auto;}" + "</style>\n" + content, null, "utf-8", null);
+        viewHolder.viewLaterButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                db = SQLDataBaseHelper.getInstance(mContext);
+                currentArticle.setReadLater(!currentArticle.isReadLater());
+                if (db.setFavoriteReadLater(currentArticle, false, currentArticle.isReadLater())) {
+                    int resourceId = currentArticle.isReadLater() ?
+                        R.drawable.ic_watch_later_black_32dp : R.drawable.ic_access_time_black_32dp;
+                    viewHolder.viewLaterButton.setImageResource(resourceId);
+                }
             }
         });
     }
@@ -101,12 +97,14 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         TextView title;
         TextView pubDate;
         ImageView image;
+        ImageButton viewLaterButton;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.articleTitle);
             pubDate = itemView.findViewById(R.id.articlePubDate);
             image = itemView.findViewById(R.id.articleImage);
+            viewLaterButton = itemView.findViewById(R.id.articleViewLaterButton);
         }
     }
 }

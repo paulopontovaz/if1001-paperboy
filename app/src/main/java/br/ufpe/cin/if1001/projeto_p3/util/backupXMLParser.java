@@ -8,26 +8,26 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.Locale;
 import java.util.Observable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import br.ufpe.cin.if1001.projeto_p3.domain.Article;
 
-/**
- * Created by Marco Gomiero on 12/02/2015.
- */
-
-public class XMLParser extends Observable {
+public class backupXMLParser extends Observable {
 
     private ArrayList<Article> articles;
-    private String feedTitle;
     private Article currentArticle;
+    private String feedTitle;
+    private Pair<String, ArrayList<Article>> xmlData;
 
-    public XMLParser() {
+    public backupXMLParser() {
         articles = new ArrayList<>();
         feedTitle = "";
         currentArticle = new Article();
@@ -54,6 +54,7 @@ public class XMLParser extends Observable {
                     feedTitle = xmlPullParser.nextText();
                     insideChannel = false;
                 }
+
                 if (xmlPullParser.getName().equalsIgnoreCase("item")) {
                     insideItem = true;
 
@@ -100,7 +101,13 @@ public class XMLParser extends Observable {
                     }
 
                 } else if (xmlPullParser.getName().equalsIgnoreCase("pubDate")) {
-                    Date pubDate = new Date(xmlPullParser.nextText());
+                    DateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.getDefault());
+                    Date pubDate = null;
+                    try {
+                        pubDate = format.parse(xmlPullParser.nextText());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                     currentArticle.setPubDate(pubDate);
                 }
 
@@ -111,13 +118,15 @@ public class XMLParser extends Observable {
             }
             eventType = xmlPullParser.next();
         }
+
+        xmlData = new Pair<>(feedTitle, articles);
         triggerObserver();
     }
 
 
     private void triggerObserver() {
         setChanged();
-        notifyObservers(new Pair<>(feedTitle,articles));
+        notifyObservers(xmlData);
     }
 
     private String getImageUrl(String input) {

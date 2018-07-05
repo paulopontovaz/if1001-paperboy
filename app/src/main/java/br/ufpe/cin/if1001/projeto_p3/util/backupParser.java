@@ -9,29 +9,26 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-import br.ufpe.cin.if1001.projeto_p3.domain.Article;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import br.ufpe.cin.if1001.projeto_p3.domain.Article;
 
-public class Parser extends AsyncTask<String, Void, String> implements Observer {
+public class backupParser extends AsyncTask<String, Void, String> implements Observer {
 
     private XMLParser xmlParser;
-    private static ArrayList<Article> articles = new ArrayList<>();
-    private static Pair<String, ArrayList<Article>> xmlData = new Pair<>("", new ArrayList<Article>());
 
     private OnTaskCompleted onComplete;
 
-    public Parser() {
+    public backupParser() {
 
         xmlParser = new XMLParser();
         xmlParser.addObserver(this);
     }
 
     public interface OnTaskCompleted {
-        void onTaskCompleted(Pair<String, ArrayList<Article>> list);
-
+        void onTaskCompleted(Pair<String, ArrayList<Article>> xmlData);
         void onError();
     }
 
@@ -40,12 +37,12 @@ public class Parser extends AsyncTask<String, Void, String> implements Observer 
     }
 
     @Override
-    protected String doInBackground(String... ulr) {
+    protected String doInBackground(String... url) {
 
         Response response = null;
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(ulr[0])
+                .url(url[0])
                 .build();
 
         try {
@@ -77,7 +74,7 @@ public class Parser extends AsyncTask<String, Void, String> implements Observer 
     @Override
     @SuppressWarnings("unchecked")
     public void update(Observable observable, Object data) {
-        xmlData = (Pair<String, ArrayList<Article>>) data;
+        Pair<String, ArrayList<Article>> xmlData = (Pair<String, ArrayList<Article>>) data;
         onComplete.onTaskCompleted(xmlData);
     }
 

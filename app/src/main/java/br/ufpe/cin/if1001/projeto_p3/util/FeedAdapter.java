@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -15,10 +16,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import br.ufpe.cin.if1001.projeto_p3.R;
 import br.ufpe.cin.if1001.projeto_p3.activities.ArticleListActivity;
+import br.ufpe.cin.if1001.projeto_p3.activities.MainActivity;
 import br.ufpe.cin.if1001.projeto_p3.db.SQLDataBaseHelper;
+import br.ufpe.cin.if1001.projeto_p3.domain.Article;
 import br.ufpe.cin.if1001.projeto_p3.domain.Feed;
 
 import static br.ufpe.cin.if1001.projeto_p3.util.Constants.*;
@@ -85,10 +89,35 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
             @Override
             public void onClick(View view) {
-                Intent articleListActivity = new Intent(mContext, ArticleListActivity.class);
-                articleListActivity.putExtra(ARTICLE_LIST_ACTIVITY_ACTION, GET_FEED_ARTICLES);
-                articleListActivity.putExtra(FEED_LINK, currentFeed.getLink());
-                mContext.startActivity(articleListActivity);
+                Parser parser = new Parser();
+                parser.execute(currentFeed.getLink());
+
+                parser.onFinish(new Parser.OnTaskCompleted() {
+                    @Override
+                    public void onTaskCompleted(Pair<String, ArrayList<Article>> xmlData) {
+                        if (xmlData.second != null) {
+                            Intent articleListActivity = new Intent(mContext, ArticleListActivity.class);
+                            articleListActivity.putExtra(ARTICLE_LIST_ACTIVITY_ACTION, GET_FEED_ARTICLES);
+                            articleListActivity.putExtra(FEED_LINK, currentFeed.getLink());
+                            articleListActivity.putExtra(FEED_TITLE, currentFeed.getTitle());
+                            articleListActivity.putParcelableArrayListExtra(ARTICLE_LIST, xmlData.second);
+                            mContext.startActivity(articleListActivity);
+                        }
+                        else
+                            Toast.makeText(
+                                    mContext, "Não foi possível obter uma lista de artigos.",
+                                    Toast.LENGTH_LONG
+                            ).show();
+                    }
+
+                    @Override
+                    public void onError() {
+                        Toast.makeText(
+                                mContext, "Erro ao ler XML",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                });
             }
         });
     }

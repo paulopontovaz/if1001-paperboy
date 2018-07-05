@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import br.ufpe.cin.if1001.projeto_p3.domain.Article;
 import br.ufpe.cin.if1001.projeto_p3.domain.Feed;
@@ -93,17 +94,17 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
         throw new RuntimeException("nao se aplica");
     }
 
-    public long insertFeed(Feed item) {
-        return insertFeed(item.getTitle(), item.getLink());
+    public void insertFeed(Feed item) {
+        insertFeed(item.getTitle(), item.getLink());
     }
 
-    public long insertFeed(String title, String link) {
+    public void insertFeed(String title, String link) {
         SQLiteDatabase dataBase = db.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(FEED_TITLE, title);
         values.put(FEED_LINK, link);
 
-        return dataBase.insert(FEED_TABLE,null, values);
+        dataBase.insert(FEED_TABLE, null, values);
     }
 
     public ArrayList<Feed> getFeeds() throws SQLException {
@@ -130,7 +131,7 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
         }
 
         ArrayList<Feed> feeds = new ArrayList<Feed>();
-        for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+        for(Objects.requireNonNull(cursor).moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             // The Cursor is now set to the right position
             feeds.add(new Feed(
                 cursor.getString(cursor.getColumnIndexOrThrow(FEED_TITLE)),
@@ -138,24 +139,15 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
             ));
         }
 
+        cursor.close();
+
         return feeds;
     }
 
     public boolean deleteFeed (String link) {
         return db.getReadableDatabase()
             .delete(FEED_TABLE, FEED_LINK + "=?", new String[]{ link }) > 0;
-//        .delete(FEED_TABLE,null, null) > 0;
     }
-
-    /*
-    * TODO: Implementar updateItem
-    * */
-
-    /*
-    * TODO: Implementar deleteItem
-    * - O artigo só deve ser excluído se, ao atualizá-lo (no updateItem), ele
-    * não for mais 'favorite' nem 'readLater'.
-    * */
 
     public long insertArticle(Article item) {
         return insertArticle(
@@ -239,10 +231,14 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
             );
         }
 
+        cursor.close();
+
         return item;
     }
-    public Cursor getArticles() throws SQLException {
+
+    public ArrayList<Article> getArticles() throws SQLException {
         SQLiteDatabase dataBase = db.getReadableDatabase();
+        DateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.getDefault());
         Cursor cursor = null;
 
         try {
@@ -264,7 +260,62 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
             System.out.println(e.toString());
         }
 
-        return cursor;
+        ArrayList<Article> articles = new ArrayList<>();
+        for(Objects.requireNonNull(cursor).moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            Date date = null;
+            try {
+                date = format.parse(cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_DATE)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            articles.add(new Article(
+                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_TITLE)),
+                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_AUTHOR)),
+                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_LINK)),
+                date,
+                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_DESCRIPTION)),
+                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_CONTENT)),
+                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_IMAGE)),
+                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_CHANNEL)),
+                cursor.getInt(cursor.getColumnIndexOrThrow(ARTICLE_FAVORITE)) == 1,
+                cursor.getInt(cursor.getColumnIndexOrThrow(ARTICLE_READ_LATER)) == 1
+            ));
+        }
+
+        cursor.close();
+
+        return articles;
     }
 
+    private void deleteArticle (String link) {
+        db.getReadableDatabase().delete(ARTICLE_TABLE, ARTICLE_LINK + "=?", new String[]{link});
+    }
+
+    //Define os valores das propriedades "Favorite" ou "ReadLater" do artigo
+    //Se nenhuma das duas for 'true', o artigo é removido do banco.
+    public boolean setFavoriteReadLater(Article argArticle, boolean isFavorite, boolean isReadLater) {
+        SQLiteDatabase dataBase = db.getWritableDatabase();
+        int result = 0;
+
+        Article article = getArticleByLink(argArticle.getLink());
+
+        if (article == null)
+            insertArticle(argArticle);
+        else if (!isFavorite && !isReadLater)
+            deleteArticle(article.getLink());
+        else {
+            ContentValues values = new ContentValues();
+            values.put(ARTICLE_FAVORITE, isFavorite);
+            values.put(ARTICLE_READ_LATER, isReadLater);
+
+            result = dataBase.update(
+                    ARTICLE_TABLE,
+                    values,
+                    ARTICLE_LINK + " LIKE ?",
+                    new String[]{ article.getLink() });
+        }
+
+        return result > 0;
+    }
 }
