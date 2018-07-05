@@ -14,9 +14,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.TimeZone;
 
 import br.ufpe.cin.if1001.projeto_p3.domain.Article;
 import br.ufpe.cin.if1001.projeto_p3.domain.Feed;
+
+import static br.ufpe.cin.if1001.projeto_p3.util.Constants.FAVORITES;
+import static br.ufpe.cin.if1001.projeto_p3.util.Constants.READ_LATER;
 
 
 public class SQLDataBaseHelper extends SQLiteOpenHelper {
@@ -65,15 +69,15 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_ARTICLE_TABLE_COMMAND = "CREATE TABLE " + ARTICLE_TABLE + " (" +
         ARTICLE_ROWID +" integer primary key autoincrement, "+
         ARTICLE_TITLE + " text not null, " +
-        ARTICLE_AUTHOR + " text not null, " +
+        ARTICLE_AUTHOR + " text, " +
         ARTICLE_LINK + " text not null, " +
-        ARTICLE_DATE + " text not null, " +
-        ARTICLE_DESCRIPTION + " text not null, " +
-        ARTICLE_CONTENT + " text not null, " +
-        ARTICLE_IMAGE + " text not null, " +
-        ARTICLE_CHANNEL + " text not null, " +
-        ARTICLE_FAVORITE + " boolean not null, " +
-        ARTICLE_READ_LATER + " boolean not null " +
+        ARTICLE_DATE + " text, " +
+        ARTICLE_DESCRIPTION + " text, " +
+        ARTICLE_CONTENT + " text, " +
+        ARTICLE_IMAGE + " text, " +
+        ARTICLE_CHANNEL + " text, " +
+        ARTICLE_FAVORITE + " boolean, " +
+        ARTICLE_READ_LATER + " boolean" +
     ");";
 
     private static final String CREATE_FEED_TABLE_COMMAND = "CREATE TABLE " + FEED_TABLE + " (" +
@@ -154,7 +158,7 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
             item.getTitle(),
             item.getAuthor(),
             item.getLink(),
-            item.getPubDate(),
+            item.getFormattedPubDate(),
             item.getDescription(),
             item.getContent(),
             item.getImage(),
@@ -169,7 +173,7 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
         String title,
         String author,
         String link,
-        Date pubDate,
+        String pubDate,
         String description,
         String content,
         String image,
@@ -182,7 +186,7 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
         values.put(ARTICLE_TITLE, title);
         values.put(ARTICLE_AUTHOR, author);
         values.put(ARTICLE_LINK, link);
-        values.put(ARTICLE_DATE, pubDate.toString());
+        values.put(ARTICLE_DATE, pubDate);
         values.put(ARTICLE_DESCRIPTION, description);
         values.put(ARTICLE_CONTENT, content);
         values.put(ARTICLE_IMAGE, image);
@@ -236,10 +240,23 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
         return item;
     }
 
-    public ArrayList<Article> getArticles() throws SQLException {
+    public ArrayList<Article> getArticles() {
+        return getArticles("");
+    }
+
+    public ArrayList<Article> getArticles(String queryType) throws SQLException {
         SQLiteDatabase dataBase = db.getReadableDatabase();
-        DateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.getDefault());
         Cursor cursor = null;
+        String where = null;
+
+        switch (queryType) {
+            case READ_LATER:
+                where = ARTICLE_READ_LATER + "=1";
+                break;
+            case FAVORITES:
+                where = ARTICLE_FAVORITE + "=1";
+                break;
+        }
 
         try {
             dataBase.beginTransaction();
@@ -247,7 +264,7 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
             cursor = dataBase.query(
                     ARTICLE_TABLE,
                     article_columns,
-                    null,
+                    where,
                     null,
                     null,
                     null,
@@ -260,36 +277,7 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
             System.out.println(e.toString());
         }
 
-        ArrayList<Article> articles = new ArrayList<>();
-        for(Objects.requireNonNull(cursor).moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-            Date date = null;
-            try {
-                date = format.parse(cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_DATE)));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            articles.add(new Article(
-                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_TITLE)),
-                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_AUTHOR)),
-                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_LINK)),
-                date,
-                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_DESCRIPTION)),
-                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_CONTENT)),
-                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_IMAGE)),
-                cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_CHANNEL)),
-                cursor.getInt(cursor.getColumnIndexOrThrow(ARTICLE_FAVORITE)) == 1,
-                cursor.getInt(cursor.getColumnIndexOrThrow(ARTICLE_READ_LATER)) == 1
-            ));
-        }
-
-        cursor.close();
-
-        return articles;
-    }
-
-    private void deleteArticle (String link) {
-        db.getReadableDatabase().delete(ARTICLE_TABLE, ARTICLE_LINK + "=?", new String[]{link});
+        return getArticlesFromCursor(cursor);
     }
 
     //Define os valores das propriedades "Favorite" ou "ReadLater" do artigo
@@ -301,9 +289,9 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
         Article article = getArticleByLink(argArticle.getLink());
 
         if (article == null)
-            insertArticle(argArticle);
+            result = (int) insertArticle(argArticle);
         else if (!isFavorite && !isReadLater)
-            deleteArticle(article.getLink());
+            result = deleteArticle(article.getLink());
         else {
             ContentValues values = new ContentValues();
             values.put(ARTICLE_FAVORITE, isFavorite);
@@ -316,6 +304,72 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
                     new String[]{ article.getLink() });
         }
 
+        ArrayList<Article> articles = getArticles(READ_LATER);
+
         return result > 0;
+    }
+
+    private ArrayList<Article> getArticlesFromCursor (Cursor cursor) {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        ArrayList<Article> articles = new ArrayList<>();
+        for(Objects.requireNonNull(cursor).moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            Date date = null;
+            try {
+                date = format.parse(cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_DATE)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            articles.add(new Article(
+                    cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_TITLE)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_AUTHOR)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_LINK)),
+                    date,
+                    cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_DESCRIPTION)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_CONTENT)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_IMAGE)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(ARTICLE_CHANNEL)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(ARTICLE_FAVORITE)) == 1,
+                    cursor.getInt(cursor.getColumnIndexOrThrow(ARTICLE_READ_LATER)) == 1
+            ));
+        }
+
+        cursor.close();
+
+        return articles;
+    }
+
+    private int deleteArticle (String link) {
+        return db.getReadableDatabase().delete(ARTICLE_TABLE, ARTICLE_LINK + "=?", new String[]{link});
+    }
+
+    private String formatDateTime(Context context, String timeToFormat) {
+
+        String finalDateTime = "";
+
+        SimpleDateFormat iso8601Format = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss");
+
+        Date date = null;
+        if (timeToFormat != null) {
+            try {
+                date = iso8601Format.parse(timeToFormat);
+            } catch (ParseException e) {
+                date = null;
+            }
+
+            if (date != null) {
+                long when = date.getTime();
+                int flags = 0;
+                flags |= android.text.format.DateUtils.FORMAT_SHOW_TIME;
+                flags |= android.text.format.DateUtils.FORMAT_SHOW_DATE;
+                flags |= android.text.format.DateUtils.FORMAT_ABBREV_MONTH;
+                flags |= android.text.format.DateUtils.FORMAT_SHOW_YEAR;
+
+                finalDateTime = android.text.format.DateUtils.formatDateTime(context,
+                        when + TimeZone.getDefault().getOffset(when), flags);
+            }
+        }
+        return finalDateTime;
     }
 }

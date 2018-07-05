@@ -96,7 +96,16 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                     @Override
                     public void onTaskCompleted(Pair<String, ArrayList<Article>> xmlData) {
                         if (xmlData.second != null) {
+                            db = SQLDataBaseHelper.getInstance(mContext);
                             Intent articleListActivity = new Intent(mContext, ArticleListActivity.class);
+
+                            ArrayList<Article> savedArticles = db.getArticles(READ_LATER);
+
+                            for(Article savedArticle : savedArticles)
+                                for(Article article : xmlData.second)
+                                    if (article.getLink().equals(savedArticle.getLink()))
+                                        article.setReadLater(savedArticle.isReadLater());
+
                             articleListActivity.putExtra(ARTICLE_LIST_ACTIVITY_ACTION, GET_FEED_ARTICLES);
                             articleListActivity.putExtra(FEED_LINK, currentFeed.getLink());
                             articleListActivity.putExtra(FEED_TITLE, currentFeed.getTitle());

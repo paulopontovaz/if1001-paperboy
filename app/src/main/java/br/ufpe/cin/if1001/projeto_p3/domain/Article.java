@@ -3,7 +3,9 @@ package br.ufpe.cin.if1001.projeto_p3.domain;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class Article implements Parcelable {
     private String title;
@@ -47,6 +49,7 @@ public class Article implements Parcelable {
         title = in.readString();
         author = in.readString();
         link = in.readString();
+        pubDate = (Date) in.readSerializable();
         description = in.readString();
         content = in.readString();
         image = in.readString();
@@ -81,6 +84,12 @@ public class Article implements Parcelable {
 
     public Date getPubDate() {
         return pubDate;
+    }
+
+    public String getFormattedPubDate() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        return dateFormat.format(getPubDate());
     }
 
     public String getDescription() {
@@ -161,42 +170,12 @@ public class Article implements Parcelable {
         dest.writeString(title);
         dest.writeString(author);
         dest.writeString(link);
-        dest.writeLong(pubDate.getTime());
+        dest.writeSerializable(pubDate);
         dest.writeString(description);
         dest.writeString(content);
         dest.writeString(image);
         dest.writeString(channel);
         dest.writeByte((byte) (favorite ? 1 : 0));
         dest.writeByte((byte) (readLater ? 1 : 0));
-    }
-
-    public Article createFromParcel(Parcel in) {
-        Article article = new Article();
-
-        article.title = in.readString();
-        article.author = in.readString();
-        article.link = in.readString();
-        article.pubDate = new Date(in.readLong());
-        article.description = in.readString();
-        article.content = in.readString();
-        article.image = in.readString();
-        article.channel = in.readString();
-        article.favorite = in.readByte() == 1;
-        article.readLater = in.readByte() == 1;
-
-        return article;
-    }
-
-    private void readFromParcel(Parcel in) {
-        title = in.readString();
-        author = in.readString();
-        link = in.readString();
-        pubDate = new Date(in.readLong());
-        description = in.readString();
-        content = in.readString();
-        image = in.readString();
-        channel = in.readString();
-        favorite = in.readByte() == 1;
-        readLater = in.readByte() == 1;
     }
 }

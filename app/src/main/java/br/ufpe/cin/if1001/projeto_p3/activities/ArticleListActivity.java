@@ -27,6 +27,7 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
     private ActionBarDrawerToggle mToggle;
     private String action;
     private RecyclerView mRecyclerView;
+    private SQLDataBaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,7 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
         mRecyclerView.setHasFixedSize(true);
 
         action = getIntent().getStringExtra(ARTICLE_LIST_ACTIVITY_ACTION);
+        db = SQLDataBaseHelper.getInstance(getApplicationContext());
 
         switch (action) {
             case GET_FEED_ARTICLES:
@@ -57,12 +59,12 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
                 break;
             case GET_READ_LATER_ARTICLES:
                 getSupportActionBar().setTitle(R.string.lerDepois);
-                ArrayList<Article> readLaterArticles = new ArrayList<>();
+                ArrayList<Article> readLaterArticles = db.getArticles(READ_LATER);
                 updateArticleList(readLaterArticles);
                 break;
             case GET_FAVORITE_ARTICLES:
                 getSupportActionBar().setTitle(R.string.favoritos);
-                ArrayList<Article> favoriteArticles = new ArrayList<>();
+                ArrayList<Article> favoriteArticles = db.getArticles(FAVORITES);
                 updateArticleList(favoriteArticles);
                 break;
         }

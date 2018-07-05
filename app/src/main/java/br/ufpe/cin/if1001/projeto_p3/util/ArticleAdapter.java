@@ -59,6 +59,9 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
 
         viewHolder.title.setText(currentArticle.getTitle());
 
+        if (currentArticle.isReadLater())
+            viewHolder.viewLaterButton.setImageResource(R.drawable.ic_watch_later_black_32dp);
+
         Picasso.get()
                 .load(currentArticle.getImage())
                 .placeholder(R.drawable.placeholder)

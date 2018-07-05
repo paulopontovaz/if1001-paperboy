@@ -8,6 +8,8 @@ public final class Constants {
     public static final String FEED_TITLE = "feed_title";
     public static final String ARTICLE_LIST_ACTIVITY_ACTION = "article_list_activity_action";
     public static final String ARTICLE_LIST = "article_list";
+    public static final String READ_LATER = "read_later";
+    public static final String FAVORITES = "favorites";
 
     //Ações na activity de artigos
     public static final String GET_FEED_ARTICLES = "get_articles";
