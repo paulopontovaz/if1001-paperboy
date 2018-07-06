@@ -10,6 +10,7 @@ public final class Constants {
     public static final String ARTICLE_LIST = "article_list";
     public static final String READ_LATER = "read_later";
     public static final String FAVORITES = "favorites";
+    public static final String ARTICLE_ITEM = "article_item";
 
     //Ações na activity de artigos
     public static final String GET_FEED_ARTICLES = "get_articles";

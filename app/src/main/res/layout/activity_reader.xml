@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".activities.ReaderActivity">
 
-    <ScrollView
-        android:id="@+id/scrollView2"
+    <WebView
+        android:id="@+id/readerContent"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@android:color/background_light"
@@ -17,11 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
+    </WebView>
 
     <android.support.v7.widget.CardView
         android:id="@+id/cardView"
@@ -41,56 +37,46 @@
             tools:layout_editor_absoluteY="321dp">
 
             <TextView
-                android:id="@+id/textView6"
+                android:id="@+id/readerTitle"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginBottom="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:text="Título"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <ImageButton
-                android:id="@+id/imageButton2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:hint="Title"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/readerFavoriteButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/readerReadLaterButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:background="@android:color/transparent"
+                android:contentDescription="Mark as Favorite"
+                android:onClick="setReadLater"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/imageButton4"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/readerFavoriteButton"
                 app:srcCompat="@drawable/ic_access_time_black_32dp" />
 
             <ImageButton
-                android:id="@+id/imageButton4"
+                android:id="@+id/readerFavoriteButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
                 android:background="@android:color/transparent"
-                app:layout_constraintEnd_toStartOf="@+id/imageButton2"
+                android:contentDescription="Share"
+                android:onClick="setFavorite"
+                app:layout_constraintBottom_toTopOf="@+id/readerReadLaterButton"
+                app:layout_constraintEnd_toEndOf="@+id/readerReadLaterButton"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/imageButton5"
-                app:layout_constraintTop_toTopOf="@+id/imageButton2"
+                app:layout_constraintStart_toStartOf="@+id/readerReadLaterButton"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_star_border_black_32dp" />
-
-            <ImageButton
-                android:id="@+id/imageButton5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="@android:color/transparent"
-                app:layout_constraintEnd_toStartOf="@+id/imageButton4"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/imageButton4"
-                app:srcCompat="@drawable/ic_share_black_32dp" />
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
 </android.support.constraint.ConstraintLayout>

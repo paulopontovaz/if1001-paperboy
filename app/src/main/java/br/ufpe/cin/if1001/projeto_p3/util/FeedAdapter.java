@@ -16,11 +16,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import br.ufpe.cin.if1001.projeto_p3.R;
 import br.ufpe.cin.if1001.projeto_p3.activities.ArticleListActivity;
-import br.ufpe.cin.if1001.projeto_p3.activities.MainActivity;
 import br.ufpe.cin.if1001.projeto_p3.db.SQLDataBaseHelper;
 import br.ufpe.cin.if1001.projeto_p3.domain.Article;
 import br.ufpe.cin.if1001.projeto_p3.domain.Feed;
@@ -65,8 +63,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 new AlertDialog.Builder(mContext)
-                    .setTitle(R.string.excluirFeedTitle)
-                    .setMessage(R.string.excluirFeedText)
+                    .setTitle(R.string.deleteFeedTitle)
+                    .setMessage(R.string.deleteFeedText)
                     .setPositiveButton(R.string.positiveButtonText, new DialogInterface.OnClickListener()
                     {
                         @Override

@@ -25,7 +25,7 @@ import static br.ufpe.cin.if1001.projeto_p3.util.Constants.*;
 public class ArticleListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private ActionBarDrawerToggle mToggle;
-    private String action;
+    public String action;
     private RecyclerView mRecyclerView;
     private SQLDataBaseHelper db;
 
@@ -47,7 +47,11 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setHasFixedSize(true);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         action = getIntent().getStringExtra(ARTICLE_LIST_ACTIVITY_ACTION);
         db = SQLDataBaseHelper.getInstance(getApplicationContext());
 

@@ -4,8 +4,10 @@
     <string name="close">close</string>
     <string name="lerDepois">Ler Depois</string>
     <string name="favoritos">Favoritos</string>
-    <string name="excluirFeedTitle">Excluir feed</string>
-    <string name="excluirFeedText">Tem certeza de que deseja excluir o feed selecionado?</string>
+    <string name="deleteFeedTitle">Excluir feed</string>
+    <string name="deleteFeedText">Tem certeza de que deseja excluir o feed selecionado?</string>
+    <string name="deleteArticleTitle">Remover artigo</string>
+    <string name="deleteArticleText">Tem certeza de que deseja remover o artigo selecionado da lista "Ler Depois"?</string>
     <string name="positiveButtonText">Sim</string>
     <string name="negativeButtonText">Cancelar</string>
 </resources>

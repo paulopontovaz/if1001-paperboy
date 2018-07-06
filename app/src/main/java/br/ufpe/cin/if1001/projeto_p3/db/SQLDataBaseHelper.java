@@ -282,20 +282,18 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
 
     //Define os valores das propriedades "Favorite" ou "ReadLater" do artigo
     //Se nenhuma das duas for 'true', o artigo é removido do banco.
-    public boolean setFavoriteReadLater(Article argArticle, boolean isFavorite, boolean isReadLater) {
+    public boolean updateArticleFavoriteReadLater(Article article) {
         SQLiteDatabase dataBase = db.getWritableDatabase();
         int result = 0;
 
-        Article article = getArticleByLink(argArticle.getLink());
-
-        if (article == null)
-            result = (int) insertArticle(argArticle);
-        else if (!isFavorite && !isReadLater)
+        if (getArticleByLink(article.getLink()) == null)
+            result = (int) insertArticle(article);
+        else if (!article.isFavorite() && !article.isReadLater())
             result = deleteArticle(article.getLink());
         else {
             ContentValues values = new ContentValues();
-            values.put(ARTICLE_FAVORITE, isFavorite);
-            values.put(ARTICLE_READ_LATER, isReadLater);
+            values.put(ARTICLE_FAVORITE, article.isFavorite());
+            values.put(ARTICLE_READ_LATER, article.isReadLater());
 
             result = dataBase.update(
                     ARTICLE_TABLE,
@@ -303,8 +301,6 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
                     ARTICLE_LINK + " LIKE ?",
                     new String[]{ article.getLink() });
         }
-
-        ArrayList<Article> articles = getArticles(READ_LATER);
 
         return result > 0;
     }

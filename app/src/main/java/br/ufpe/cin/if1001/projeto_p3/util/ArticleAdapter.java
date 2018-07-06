@@ -1,16 +1,18 @@
 package br.ufpe.cin.if1001.projeto_p3.util;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -20,8 +22,13 @@ import java.util.Date;
 import java.util.Locale;
 
 import br.ufpe.cin.if1001.projeto_p3.R;
+import br.ufpe.cin.if1001.projeto_p3.activities.ArticleListActivity;
+import br.ufpe.cin.if1001.projeto_p3.activities.ReaderActivity;
 import br.ufpe.cin.if1001.projeto_p3.db.SQLDataBaseHelper;
 import br.ufpe.cin.if1001.projeto_p3.domain.Article;
+
+import static br.ufpe.cin.if1001.projeto_p3.util.Constants.ARTICLE_ITEM;
+import static br.ufpe.cin.if1001.projeto_p3.util.Constants.GET_READ_LATER_ARTICLES;
 
 public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHolder> {
 
@@ -71,7 +78,9 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
 
             @Override
             public void onClick(View view) {
-
+                Intent readerActivity = new Intent(mContext, ReaderActivity.class);
+                readerActivity.putExtra(ARTICLE_ITEM, currentArticle);
+                mContext.startActivity(readerActivity);
             }
         });
 
@@ -80,13 +89,60 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
             public void onClick(View view) {
                 db = SQLDataBaseHelper.getInstance(mContext);
                 currentArticle.setReadLater(!currentArticle.isReadLater());
-                if (db.setFavoriteReadLater(currentArticle, false, currentArticle.isReadLater())) {
-                    int resourceId = currentArticle.isReadLater() ?
-                        R.drawable.ic_watch_later_black_32dp : R.drawable.ic_access_time_black_32dp;
-                    viewHolder.viewLaterButton.setImageResource(resourceId);
+
+
+                if(!currentArticle.isReadLater() && ((ArticleListActivity) mContext).action.equals(GET_READ_LATER_ARTICLES)) {
+                    new AlertDialog.Builder(mContext)
+                            .setTitle(R.string.deleteArticleTitle)
+                            .setMessage(R.string.deleteArticleText)
+                            .setPositiveButton(R.string.positiveButtonText, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    SQLDataBaseHelper db = SQLDataBaseHelper.getInstance(mContext);
+                                    removeArticle(currentArticle.getLink());
+                                }
+
+                            })
+                            .setNegativeButton(R.string.negativeButtonText, null)
+                            .show();
                 }
+                else
+                    updateArticle(currentArticle);
+            }
+
+            private boolean updateArticle(Article article) {
+                if (db.updateArticleFavoriteReadLater(article)) {
+                    int resourceId = article.isReadLater() ?
+                            R.drawable.ic_watch_later_black_32dp : R.drawable.ic_access_time_black_32dp;
+                    viewHolder.viewLaterButton.setImageResource(resourceId);
+                    return true;
+                }
+
+                return false;
             }
         });
+    }
+
+
+
+    private void removeArticle (String link) {
+        for (int i = 0; i < articles.size(); i++) {
+            if (articles.get(i).getLink() == link) {
+                articles.remove(i);
+                notifyArticleRemoval();
+                notifyItemRemoved(i);
+                notifyItemRangeChanged(i, articles.size());
+                break;
+            }
+        }
+    }
+
+    private void notifyArticleRemoval () {
+        Toast.makeText(
+                mContext,
+                String.format("Artigo foi removido da lista \"Ler Depois\"!"),
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
     @Override
