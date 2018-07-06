@@ -30,25 +30,34 @@ public class ReaderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reader);
 
-        article = (Article) getIntent().getParcelableExtra(ARTICLE_ITEM);
+        article = getIntent().getParcelableExtra(ARTICLE_ITEM);
 
-        TextView title = (TextView) findViewById(R.id.readerTitle);
+        TextView title = findViewById(R.id.readerTitle);
         title.setText(article.getTitle());
 
-        WebView myWebView = (WebView) findViewById(R.id.readerContent);
+        WebView myWebView = findViewById(R.id.readerContent);
         myWebView.setWebViewClient(new WebViewClient());
         Intent intentContent = getIntent();
         myWebView.loadUrl(article.getLink());
 
         if(article.isReadLater()) {
-            ImageButton readLaterButton = (ImageButton)findViewById(R.id.readerReadLaterButton);
+            ImageButton readLaterButton = findViewById(R.id.readerReadLaterButton);
             readLaterButton.setImageResource(READ_LATER_MARKED);
         }
 
         if(article.isFavorite()) {
-            ImageButton favoriteButton = (ImageButton)findViewById(R.id.readerFavoriteButton);
+            ImageButton favoriteButton = findViewById(R.id.readerFavoriteButton);
             favoriteButton.setImageResource(FAVORITE_MARKED);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra(ARTICLE_ITEM, article);
+        setResult(RESULT_OK, intent);
+        finish();
+        super.onBackPressed();
     }
 
     public void setFavorite(View view){

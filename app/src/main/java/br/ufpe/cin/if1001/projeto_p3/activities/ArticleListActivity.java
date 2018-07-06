@@ -28,6 +28,7 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
     public String action;
     private RecyclerView mRecyclerView;
     private SQLDataBaseHelper db;
+    private ArrayList<Article> articles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,18 +59,18 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
         switch (action) {
             case GET_FEED_ARTICLES:
                 getSupportActionBar().setTitle(getIntent().getStringExtra(FEED_TITLE));
-                ArrayList<Article> articlesFromExtra = getIntent().getParcelableArrayListExtra(ARTICLE_LIST);
-                updateArticleList(articlesFromExtra);
+                articles = getIntent().getParcelableArrayListExtra(ARTICLE_LIST);
+                updateArticleList();
                 break;
             case GET_READ_LATER_ARTICLES:
                 getSupportActionBar().setTitle(R.string.lerDepois);
-                ArrayList<Article> readLaterArticles = db.getArticles(READ_LATER);
-                updateArticleList(readLaterArticles);
+                articles = db.getArticles(READ_LATER);
+                updateArticleList();
                 break;
             case GET_FAVORITE_ARTICLES:
                 getSupportActionBar().setTitle(R.string.favoritos);
-                ArrayList<Article> favoriteArticles = db.getArticles(FAVORITES);
-                updateArticleList(favoriteArticles);
+                articles = db.getArticles(FAVORITES);
+                updateArticleList();
                 break;
         }
     }
@@ -104,12 +105,30 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
         return false;
     }
 
-    private void updateArticleList(ArrayList<Article> articles) {
+    private void updateArticleList() {
         ArticleAdapter mArticleAdapter = new ArticleAdapter(
                 articles,
                 R.layout.article_list_item,
                 ArticleListActivity.this
         );
         mRecyclerView.setAdapter(mArticleAdapter);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                Article article = data.getParcelableExtra(ARTICLE_ITEM);
+                for (Article a : articles) {
+                    if(article.getLink().equals(a.getLink())) {
+                        a.setFavorite(article.isFavorite());
+                        a.setReadLater(article.isReadLater());
+                        updateArticleList();
+                        break;
+                    }
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

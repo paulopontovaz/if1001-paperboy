@@ -1,5 +1,6 @@
 package br.ufpe.cin.if1001.projeto_p3.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -80,7 +81,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
             public void onClick(View view) {
                 Intent readerActivity = new Intent(mContext, ReaderActivity.class);
                 readerActivity.putExtra(ARTICLE_ITEM, currentArticle);
-                mContext.startActivity(readerActivity);
+                ((Activity) mContext).startActivityForResult(readerActivity,1);
             }
         });
 
