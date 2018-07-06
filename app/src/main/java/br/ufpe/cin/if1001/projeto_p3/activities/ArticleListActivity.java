@@ -3,6 +3,7 @@ package br.ufpe.cin.if1001.projeto_p3.activities;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
@@ -29,13 +31,15 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
     private RecyclerView mRecyclerView;
     private SQLDataBaseHelper db;
     private ArrayList<Article> articles;
+    private MenuItem item;
+    private DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
 
-        DrawerLayout mDrawerLayout = findViewById(R.id.drawer);
+        mDrawerLayout = findViewById(R.id.articleListDrawer);
         mToggle =  new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
@@ -55,6 +59,7 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
         super.onResume();
         action = getIntent().getStringExtra(ARTICLE_LIST_ACTIVITY_ACTION);
         db = SQLDataBaseHelper.getInstance(getApplicationContext());
+        mDrawerLayout.closeDrawer(GravityCompat.START, false);
 
         switch (action) {
             case GET_FEED_ARTICLES:
@@ -73,6 +78,23 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
                 updateArticleList();
                 break;
         }
+    }
+
+    @Override
+    public boolean onMenuOpened(int featureId, Menu menu) {
+
+        switch (action) {
+            case GET_READ_LATER_ARTICLES:
+                item = findViewById(R.id.lermaistarde_menu);
+                item.setEnabled(false);
+                break;
+            case GET_FAVORITE_ARTICLES:
+                item = findViewById(R.id.favoritos_menu);
+                item.setEnabled(false);
+                break;
+        }
+
+        return super.onMenuOpened(featureId, menu);
     }
 
     @Override

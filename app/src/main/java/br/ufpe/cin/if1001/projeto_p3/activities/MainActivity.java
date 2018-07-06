@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.util.Pair;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Patterns;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -45,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().setTitle("PaperBoy");
 
         db = SQLDataBaseHelper.getInstance(getApplicationContext());
-        DrawerLayout mDrawerLayout = findViewById(R.id.drawer);
+        DrawerLayout mDrawerLayout = findViewById(R.id.mainDrawer);
         mToggle =  new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
@@ -65,6 +67,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        DrawerLayout mainDrawer = findViewById(R.id.mainDrawer);
+        mainDrawer.closeDrawer(GravityCompat.START, false);
+    }
+
+    @Override
+    public boolean onMenuOpened(int featureId, Menu menu) {
+        MenuItem item = findViewById(R.id.home_menu);
+        item.setEnabled(false);
+        return super.onMenuOpened(featureId, menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return mToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
@@ -80,7 +96,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.lermaistarde_menu)
             articleListActivity.putExtra(ARTICLE_LIST_ACTIVITY_ACTION, GET_READ_LATER_ARTICLES);
 
-        startActivity(articleListActivity);
+        if (id == R.id.favoritos_menu || id == R.id.lermaistarde_menu)
+            startActivity(articleListActivity);
+
         return false;
     }
 
