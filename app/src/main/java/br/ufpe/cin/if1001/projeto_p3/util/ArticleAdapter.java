@@ -100,6 +100,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     SQLDataBaseHelper db = SQLDataBaseHelper.getInstance(mContext);
+                                    db.updateArticleFavoriteReadLater(currentArticle);
                                     removeArticle(currentArticle.getLink());
                                 }
 
@@ -128,7 +129,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
 
     private void removeArticle (String link) {
         for (int i = 0; i < articles.size(); i++) {
-            if (articles.get(i).getLink() == link) {
+            if (articles.get(i).getLink().equals(link)) {
                 articles.remove(i);
                 notifyArticleRemoval();
                 notifyItemRemoved(i);

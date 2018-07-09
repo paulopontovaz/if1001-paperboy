@@ -10,7 +10,6 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,17 +31,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     private int rowLayout;
     private Context mContext;
-    private WebView feedView;
 
     public FeedAdapter(ArrayList<Feed> list, int rowLayout, Context context) {
         this.feeds = list;
         this.rowLayout = rowLayout;
         this.mContext = context;
-    }
-
-    public void clearData() {
-        if (feeds != null)
-            feeds.clear();
     }
 
     @NonNull

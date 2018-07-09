@@ -10,16 +10,11 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Observable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import br.ufpe.cin.if1001.projeto_p3.domain.Article;
-
-/**
- * Created by Marco Gomiero on 12/02/2015.
- */
 
 public class XMLParser extends Observable {
 

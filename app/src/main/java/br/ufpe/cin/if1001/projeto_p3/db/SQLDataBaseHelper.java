@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.TimeZone;
 
 import br.ufpe.cin.if1001.projeto_p3.domain.Article;
 import br.ufpe.cin.if1001.projeto_p3.domain.Feed;
@@ -29,7 +28,6 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
     private static final String FEED_TABLE = FeedInfo.FEED_TABLE;
     private static final int DB_VERSION = 1;
 
-    //alternativa
     Context c;
 
     private SQLDataBaseHelper(Context context) {
@@ -337,35 +335,5 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
 
     private int deleteArticle (String link) {
         return db.getReadableDatabase().delete(ARTICLE_TABLE, ARTICLE_LINK + "=?", new String[]{link});
-    }
-
-    private String formatDateTime(Context context, String timeToFormat) {
-
-        String finalDateTime = "";
-
-        SimpleDateFormat iso8601Format = new SimpleDateFormat(
-                "yyyy-MM-dd HH:mm:ss");
-
-        Date date = null;
-        if (timeToFormat != null) {
-            try {
-                date = iso8601Format.parse(timeToFormat);
-            } catch (ParseException e) {
-                date = null;
-            }
-
-            if (date != null) {
-                long when = date.getTime();
-                int flags = 0;
-                flags |= android.text.format.DateUtils.FORMAT_SHOW_TIME;
-                flags |= android.text.format.DateUtils.FORMAT_SHOW_DATE;
-                flags |= android.text.format.DateUtils.FORMAT_ABBREV_MONTH;
-                flags |= android.text.format.DateUtils.FORMAT_SHOW_YEAR;
-
-                finalDateTime = android.text.format.DateUtils.formatDateTime(context,
-                        when + TimeZone.getDefault().getOffset(when), flags);
-            }
-        }
-        return finalDateTime;
     }
 }
