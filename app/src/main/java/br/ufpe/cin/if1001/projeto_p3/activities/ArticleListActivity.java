@@ -1,8 +1,16 @@
 package br.ufpe.cin.if1001.projeto_p3.activities;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -11,13 +19,18 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import br.ufpe.cin.if1001.projeto_p3.R;
+import br.ufpe.cin.if1001.projeto_p3.Services.ArticlesIntentService;
+import br.ufpe.cin.if1001.projeto_p3.Services.ArticlesJobService;
 import br.ufpe.cin.if1001.projeto_p3.db.SQLDataBaseHelper;
 import br.ufpe.cin.if1001.projeto_p3.domain.Article;
 import br.ufpe.cin.if1001.projeto_p3.util.ArticleAdapter;
@@ -33,6 +46,7 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
     private ArrayList<Article> articles;
     private MenuItem item;
     private DrawerLayout mDrawerLayout;
+    private String feedLink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +66,8 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setHasFixedSize(true);
+
+        feedLink = getIntent().getStringExtra(FEED_LINK);
     }
 
     @Override
@@ -61,11 +77,30 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
         db = SQLDataBaseHelper.getInstance(getApplicationContext());
         mDrawerLayout.closeDrawer(GravityCompat.START, false);
 
+        if(feedLink == null)
+            feedLink = getIntent().getStringExtra(FEED_LINK);
+
+        IntentFilter intentFilter = new IntentFilter(UPDATE_ARTICLES_FINISHED);
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(onUpdateArticleList, intentFilter);
+
         switch (action) {
             case GET_FEED_ARTICLES:
                 getSupportActionBar().setTitle(getIntent().getStringExtra(FEED_TITLE));
                 articles = getIntent().getParcelableArrayListExtra(ARTICLE_LIST);
                 updateArticleList();
+
+                if(!IsJobRunning(Integer.parseInt(getString(R.string.job_update_feed_id))))
+                    ScheduleJob();
+
+                String feedLink = getIntent().getStringExtra(FEED_LINK);
+
+                if (!feedLink.isEmpty() && articles != null && !articles.isEmpty()) {
+                    Intent loadServiceIntent = new Intent(getApplicationContext(), ArticlesIntentService.class);
+                    loadServiceIntent.putExtra(FEED_LINK, getIntent().getStringExtra(FEED_LINK));
+                    loadServiceIntent.putParcelableArrayListExtra(ARTICLE_LIST, getIntent().getParcelableArrayListExtra(ARTICLE_LIST));
+                    startService(loadServiceIntent);
+                }
+
                 break;
             case GET_READ_LATER_ARTICLES:
                 getSupportActionBar().setTitle(R.string.lerDepois);
@@ -79,6 +114,31 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
                 break;
         }
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(onUpdateArticleList);
+    }
+
+    private BroadcastReceiver onUpdateArticleList = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            System.out.println("onReceive");
+            ArrayList<Article> newArticles = intent.getParcelableArrayListExtra(ARTICLE_LIST);
+
+            if(articles != null && !articles.isEmpty() && newArticles != null && !newArticles.isEmpty()){
+                List<String> currentArticleLinks = articles.stream().map(Article::getLink).collect(Collectors.toList());
+
+                for (Article article : newArticles)
+                    if (!currentArticleLinks.contains(article.getLink())){
+                        articles.add(article);
+                        updateArticleList();
+                        break;
+                    }
+            }
+        }
+    };
 
     @Override
     public boolean onMenuOpened(int featureId, Menu menu) {
@@ -152,5 +212,37 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public boolean IsJobRunning (int jobId) {
+        JobScheduler scheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+        if (scheduler != null) {
+            for ( JobInfo jobInfo : scheduler.getAllPendingJobs()) {
+                Log.i("JOB_COUNT", Integer.toString(jobInfo.getId()));
+                if ( jobInfo.getId() == jobId )
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void ScheduleJob(){
+        ComponentName componentName = new ComponentName(this, ArticlesJobService.class);
+        PersistableBundle bundle = new PersistableBundle();
+        bundle.putString(FEED_LINK, feedLink);
+
+        int jobId = Integer.parseInt(getString(R.string.job_update_feed_id));
+        JobInfo ji = new JobInfo.Builder(jobId, componentName)
+                .setPeriodic(ARTICLE_LIST_UPDATE_FREQUENCY)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setExtras(bundle)
+                .build();
+
+        JobScheduler js = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        if (js != null)
+            js.schedule(ji);
+        Log.i("JOB_SCHEDULER", "Job scheduled!");
     }
 }

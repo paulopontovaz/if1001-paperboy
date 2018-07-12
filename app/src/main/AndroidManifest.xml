@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -20,7 +19,16 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.ReaderActivity" />
-        <activity android:name=".activities.ArticleListActivity"></activity>
+        <activity android:name=".activities.ArticleListActivity" />
+
+        <service
+            android:name=".Services.ArticlesJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="true"/>
+
+        <service
+            android:name=".Services.ArticlesIntentService"
+            android:exported="false"/>
     </application>
 
 </manifest>

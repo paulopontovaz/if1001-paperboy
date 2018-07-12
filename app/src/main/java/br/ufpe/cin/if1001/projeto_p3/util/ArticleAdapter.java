@@ -28,8 +28,7 @@ import br.ufpe.cin.if1001.projeto_p3.activities.ReaderActivity;
 import br.ufpe.cin.if1001.projeto_p3.db.SQLDataBaseHelper;
 import br.ufpe.cin.if1001.projeto_p3.domain.Article;
 
-import static br.ufpe.cin.if1001.projeto_p3.util.Constants.ARTICLE_ITEM;
-import static br.ufpe.cin.if1001.projeto_p3.util.Constants.GET_READ_LATER_ARTICLES;
+import static br.ufpe.cin.if1001.projeto_p3.util.Constants.*;
 
 public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHolder> {
 
@@ -68,7 +67,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         viewHolder.title.setText(currentArticle.getTitle());
 
         if (currentArticle.isReadLater())
-            viewHolder.viewLaterButton.setImageResource(R.drawable.ic_watch_later_black_32dp);
+            viewHolder.viewLaterButton.setImageResource(READ_LATER_MARKED);
 
         Picasso.get()
                 .load(currentArticle.getImage())
@@ -91,22 +90,20 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
                 db = SQLDataBaseHelper.getInstance(mContext);
                 currentArticle.setReadLater(!currentArticle.isReadLater());
 
-
                 if(!currentArticle.isReadLater() && ((ArticleListActivity) mContext).action.equals(GET_READ_LATER_ARTICLES)) {
                     new AlertDialog.Builder(mContext)
-                            .setTitle(R.string.deleteArticleTitle)
-                            .setMessage(R.string.deleteArticleText)
-                            .setPositiveButton(R.string.positiveButtonText, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    SQLDataBaseHelper db = SQLDataBaseHelper.getInstance(mContext);
-                                    db.updateArticleFavoriteReadLater(currentArticle);
-                                    removeArticle(currentArticle.getLink());
-                                }
+                        .setTitle(R.string.deleteArticleTitle)
+                        .setMessage(R.string.deleteArticleText)
+                        .setPositiveButton(R.string.positiveButtonText, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                updateArticle(currentArticle);
+                                removeArticle(currentArticle.getLink());
+                            }
 
-                            })
-                            .setNegativeButton(R.string.negativeButtonText, null)
-                            .show();
+                        })
+                        .setNegativeButton(R.string.negativeButtonText, null)
+                        .show();
                 }
                 else
                     updateArticle(currentArticle);
@@ -115,7 +112,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
             private boolean updateArticle(Article article) {
                 if (db.updateArticleFavoriteReadLater(article)) {
                     int resourceId = article.isReadLater() ?
-                            R.drawable.ic_watch_later_black_32dp : R.drawable.ic_access_time_black_32dp;
+                            READ_LATER_MARKED : READ_LATER_UNMARKED;
                     viewHolder.viewLaterButton.setImageResource(resourceId);
                     return true;
                 }

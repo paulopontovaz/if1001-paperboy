@@ -10,4 +10,5 @@
     <string name="deleteArticleText">Tem certeza de que deseja remover o artigo selecionado da lista "Ler Depois"?</string>
     <string name="positiveButtonText">Sim</string>
     <string name="negativeButtonText">Cancelar</string>
+    <string name="job_update_feed_id">42</string>
 </resources>

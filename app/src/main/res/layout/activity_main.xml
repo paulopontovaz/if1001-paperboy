@@ -33,6 +33,7 @@
             android:ems="10"
             android:hint="Novo Feed (Link)"
             android:inputType="textPersonName"
+            android:text="https://lorem-rss.herokuapp.com/feed?unit=second&amp;interval=30"
             app:layout_constraintEnd_toStartOf="@+id/addButton"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"

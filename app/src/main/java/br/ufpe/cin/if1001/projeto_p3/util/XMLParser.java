@@ -112,7 +112,7 @@ public class XMLParser extends Observable {
 
     private void triggerObserver() {
         setChanged();
-        notifyObservers(new Pair<>(feedTitle,articles));
+        notifyObservers(new Pair<>(feedTitle, articles));
     }
 
     private String getImageUrl(String input) {

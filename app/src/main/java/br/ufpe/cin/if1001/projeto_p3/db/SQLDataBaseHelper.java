@@ -282,7 +282,7 @@ public class SQLDataBaseHelper extends SQLiteOpenHelper {
     //Se nenhuma das duas for 'true', o artigo é removido do banco.
     public boolean updateArticleFavoriteReadLater(Article article) {
         SQLiteDatabase dataBase = db.getWritableDatabase();
-        int result = 0;
+        int result;
 
         if (getArticleByLink(article.getLink()) == null)
             result = (int) insertArticle(article);

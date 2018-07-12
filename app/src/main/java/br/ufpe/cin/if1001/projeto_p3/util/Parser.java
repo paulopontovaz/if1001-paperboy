@@ -18,7 +18,6 @@ import okhttp3.Response;
 public class Parser extends AsyncTask<String, Void, String> implements Observer {
 
     private XMLParser xmlParser;
-    private static ArrayList<Article> articles = new ArrayList<>();
     private static Pair<String, ArrayList<Article>> xmlData = new Pair<>("", new ArrayList<Article>());
 
     private OnTaskCompleted onComplete;
@@ -42,7 +41,7 @@ public class Parser extends AsyncTask<String, Void, String> implements Observer 
     @Override
     protected String doInBackground(String... ulr) {
 
-        Response response = null;
+        Response response;
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(ulr[0])
