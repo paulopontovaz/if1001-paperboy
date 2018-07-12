@@ -10,7 +10,7 @@ public final class Constants {
     public static final int FAVORITE_UNMARKED = R.drawable.ic_star_border_black_32dp;
     public static final int READ_LATER_MARKED = R.drawable.ic_watch_later_black_32dp;
     public static final int READ_LATER_UNMARKED = R.drawable.ic_access_time_black_32dp;
-    public static final int ARTICLE_LIST_UPDATE_FREQUENCY = 3000;//600000;
+    public static final int ARTICLE_LIST_UPDATE_FREQUENCY = 900000;
 
     public static final String FEED_LINK = "feed_link";
     public static final String FEED_TITLE = "feed_title";
