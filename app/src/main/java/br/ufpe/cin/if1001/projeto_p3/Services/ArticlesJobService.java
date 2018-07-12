@@ -13,13 +13,12 @@ public class ArticlesJobService extends JobService {
     @Override
     public boolean onStartJob(JobParameters params) {
         Log.i(TAG, "onStartJob");
-        android.os.Debug.waitForDebugger();
 
         Intent loadServiceIntent = new Intent(getApplicationContext(), ArticlesIntentService.class);
-        loadServiceIntent.putExtra(FEED_LINK, params.getExtras().getLong(FEED_LINK));
+        loadServiceIntent.putExtra(FEED_LINK, params.getExtras().getString(FEED_LINK));
 
         startService(loadServiceIntent);
-        jobFinished(params, false);
+        jobFinished(params, true);
         return true;
     }
 

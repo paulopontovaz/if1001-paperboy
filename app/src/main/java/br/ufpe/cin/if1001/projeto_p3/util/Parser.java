@@ -64,7 +64,6 @@ public class Parser extends AsyncTask<String, Void, String> implements Observer 
         if (result != null) {
             try {
                 xmlParser.parseXML(result);
-                Log.i("RSS Parser ", "RSS parsed correctly!");
             } catch (Exception e) {
                 e.printStackTrace();
                 onComplete.onError();

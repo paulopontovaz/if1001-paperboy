@@ -92,8 +92,6 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
                 if(!IsJobRunning(Integer.parseInt(getString(R.string.job_update_feed_id))))
                     ScheduleJob();
 
-                String feedLink = getIntent().getStringExtra(FEED_LINK);
-
                 if (!feedLink.isEmpty() && articles != null && !articles.isEmpty()) {
                     Intent loadServiceIntent = new Intent(getApplicationContext(), ArticlesIntentService.class);
                     loadServiceIntent.putExtra(FEED_LINK, getIntent().getStringExtra(FEED_LINK));
@@ -229,20 +227,24 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
     }
 
     public void ScheduleJob(){
-        ComponentName componentName = new ComponentName(this, ArticlesJobService.class);
-        PersistableBundle bundle = new PersistableBundle();
-        bundle.putString(FEED_LINK, feedLink);
+        if (!feedLink.isEmpty()) {
+            ComponentName componentName = new ComponentName(this, ArticlesJobService.class);
+            PersistableBundle bundle = new PersistableBundle();
+            bundle.putString(FEED_LINK, feedLink);
 
-        int jobId = Integer.parseInt(getString(R.string.job_update_feed_id));
-        JobInfo ji = new JobInfo.Builder(jobId, componentName)
-                .setPeriodic(ARTICLE_LIST_UPDATE_FREQUENCY)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setExtras(bundle)
-                .build();
+            int jobId = Integer.parseInt(getString(R.string.job_update_feed_id));
+            JobInfo ji = new JobInfo.Builder(jobId, componentName)
+                    .setPeriodic(ARTICLE_LIST_UPDATE_FREQUENCY)
+                    .setMinimumLatency(ARTICLE_LIST_UPDATE_FREQUENCY)
+                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                    .setExtras(bundle)
+                    .build();
 
-        JobScheduler js = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        if (js != null)
-            js.schedule(ji);
-        Log.i("JOB_SCHEDULER", "Job scheduled!");
+            JobScheduler js = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+            if (js != null)
+                js.schedule(ji);
+            Log.i("JOB_SCHEDULER", "Job scheduled!");
+        }
     }
 }
