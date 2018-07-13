@@ -235,7 +235,6 @@ public class ArticleListActivity extends AppCompatActivity implements Navigation
             int jobId = Integer.parseInt(getString(R.string.job_update_feed_id));
             JobInfo ji = new JobInfo.Builder(jobId, componentName)
                     .setPeriodic(ARTICLE_LIST_UPDATE_FREQUENCY)
-                    .setMinimumLatency(ARTICLE_LIST_UPDATE_FREQUENCY)
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                     .setExtras(bundle)
                     .build();
